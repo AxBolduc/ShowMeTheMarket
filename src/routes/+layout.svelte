@@ -2,8 +2,25 @@
 	import { listen } from '@tauri-apps/api/event';
 	import '../app.css';
 	import { onMount } from 'svelte';
-	import { XblAuth } from '$lib/services/auth';
+	import { authManager } from '$lib/stores/auth.svelte';
+	import { page } from '$app/stores';
+	import { goto } from '$app/navigation';
 	let { children } = $props();
+
+	$effect(() => {
+		if(authManager.isLoading) return
+
+		if(!authManager.isAuthenticated && $page.url.pathname !== '/login') {
+			console.log('Not Authed yet, sending to login page')
+			goto('/login')
+		}
+
+		if(authManager.isAuthenticated && $page.url.pathname === '/login') {
+			console.log("Already Authenticated, redirecting to dashbaord")
+			goto('/dashboard')
+		}
+
+	})
 
 	onMount(() => {
 		listenForDeepLinks()
@@ -24,7 +41,7 @@
 				}
 
 				try {
-					await XblAuth(authCode);
+					await authManager.authenticate(authCode)
 				} catch (err) {
 					if(err instanceof Error) {
 						console.error(err.message)

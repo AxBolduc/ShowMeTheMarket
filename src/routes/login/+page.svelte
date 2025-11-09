@@ -1,7 +1,7 @@
 <script lang="ts">
 	import { GlobalState, preventDefault } from '$lib';
+	import { authManager } from '$lib/stores/auth.svelte';
 	import { openUrl } from '@tauri-apps/plugin-opener';
-	import AuthStore, { authStore } from '$lib/stores/auth.svelte';
 
 	const gs = new GlobalState();
 
@@ -15,20 +15,20 @@
 	}
 </script>
 
-<div class="hero bg-blue-200 min-h-screen">
+<div class="hero min-h-screen">
 	<div class="hero-content text-center">
 		<div class="max-w-md flex flex-col gap-4">
-			{#if authStore.token === null}
-				<h1 class="text-5xl text-black">Login with Xbox</h1>
+				<h1 class="text-5xl">Login with Xbox</h1>
 				<button
-					class="bg-green-400 p-2 border-white border-solid border rounded-lg"
+					class="btn-primary btn"
 					onclick={openXboxLogin}
 				>
-					<span class="text-2xl text-black">login</span>
+				{#if authManager.isLoading}
+					<span class="loading loading-spinner"></span>
+				{:else}
+					<span class="text-2xl">login</span>
+				{/if}
 				</button>
-			{:else}
-				<h1 class="text-5xl text-black">Logged In with XBox</h1>
-			{/if}
 		</div>
 	</div>
 </div>
