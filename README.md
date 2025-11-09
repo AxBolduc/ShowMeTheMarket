@@ -1,20 +1,22 @@
-# Tauri 2 Svelte 5 Boilerplate
-Simple boilerplate for Tauri 2 with Svelte 5 (and DaisyUI) using Bun runtime.
+# MLB The Show 25 Market GUI
+Desktop application for interacting with the marketplace for MLB The Show 25 Diamond Dynasty
 
-## Requirements
-In order to run this boilerplate, you need to install Bun and Rust. If you are on Windows I also recommend installing MSVC before the other dependencies (make sure to check the "Desktop development with C++" workload).
+## Features
+- [x] Log in with Xbox live 
+- [ ] View coin balance
+- [ ] View card
+    - [ ] View stats
+    - [ ] View perks
+- [ ] Search the market for cards
+- [ ] Place Buy/Sell orders for cards
+- [ ] View outstanding card orders
+- [ ] View completed orders  
+- [ ] View card inventory
 
-Some useful links:
-- https://bun.sh/docs/installation
-- https://www.rust-lang.org/tools/install
-- https://visualstudio.microsoft.com/vs/community/
 
-## Setup
-```
-git clone https://github.com/alysonhower/tauri2-svelte5-boilerplate.git
-cd tauri2-svelte5-boilerplate
-bun i
-```
+## Notes
+- Currently only supports Xbox login (because that's the only account I have to test with)
+
 ## Useful commands
 ### Start dev server
 ```
@@ -35,8 +37,6 @@ https://tauri.app/start/
 
 ### DaisyUI
 https://daisyui.com/docs/
-
-Note: Boilerplate tested on Windows 11 only.
 
 ## License
 This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
