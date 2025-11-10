@@ -20,7 +20,7 @@
 		"@tailwindcss/postcss": "^4.1.17",
 		"@tailwindcss/typography": "^0.5.15",
 		"@types/lodash": "^4.17.20",
-		"daisyui": "^4.12.13",
+		"daisyui": "^5.4.7",
 		"prettier": "^3.3.3",
 		"prettier-plugin-svelte": "^3.2.7",
 		"svelte": "^5.1.1",
