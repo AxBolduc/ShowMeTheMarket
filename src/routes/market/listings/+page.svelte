@@ -6,7 +6,7 @@
 <div class="m-8">
 	<!-- <div class="grid grid-cols-3 gap-4">
 		{#each data.listings as listing}
-			<div class="card bg-base-300 shadow-sm">
+			<div class="card bg-base-300 shadow-xs">
 				<figure class="bg-base-200">
 					<img src={listing.item.baked_img} alt="card" />
 				</figure>
