@@ -8,7 +8,7 @@ export async function getListings(opts?: Partial<GetListingsOptions>) {
     const stringifiedOptions = _.mapValues(opts, (opt) => opt?.toString());
     const queryParams = new URLSearchParams(stringifiedOptions)
 
-    const url = `${PUBLIC_API_BASE}/listings.json${queryParams.toString() ? '?' + queryParams.toString : ""}`
+    const url = `${PUBLIC_API_BASE}/listings.json${queryParams.toString() ? '?' + queryParams.toString() : ""}`
 
     console.log(url)
 
