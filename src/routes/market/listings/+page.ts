@@ -1,7 +1,6 @@
 import { getListings } from "$lib/services/listings";
-import type { PageLoad } from "./$types";
 
-export const load: PageLoad = async ({params}) => {
+export const load = async () => {
     const {listings}  = await getListings();
 
     return {
