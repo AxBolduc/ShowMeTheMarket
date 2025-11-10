@@ -8,6 +8,7 @@
 	let { children } = $props();
 
 	$effect(() => {
+		console.log("checking")
 		if(authManager.isLoading) return
 
 		if(!authManager.isAuthenticated && $page.url.pathname !== '/login') {
@@ -15,7 +16,7 @@
 			goto('/login')
 		}
 
-		if(authManager.isAuthenticated && $page.url.pathname === '/login') {
+		if(authManager.isAuthenticated && ($page.url.pathname === '/login' || $page.url.pathname === '/')) {
 			console.log("Already Authenticated, redirecting to dashbaord")
 			goto('/dashboard')
 		}

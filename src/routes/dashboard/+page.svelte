@@ -9,6 +9,9 @@
 		<div class="flex flex-col gap-4">
 			<h1 class="text-4xl">Welcome {authManager.username}</h1>
 			<Wallet stubs={data.stubs} />
+            <a href="/market/listings">
+                <button class="btn btn-primary">View Listings</button>
+            </a>
 		</div>
 	</div>
 </div>

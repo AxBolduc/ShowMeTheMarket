@@ -12,9 +12,6 @@ export async function getStubs() {
 		account_token: authManager.token
 	});
 
-	console.log(url);
-	console.log(body);
-
 	const result = await fetch(url, {
 		method: 'POST',
 		body,
