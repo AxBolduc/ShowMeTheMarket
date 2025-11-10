@@ -15,7 +15,6 @@
 	</div>
 	<div class="">
 		<button class="btn btn-primary">Buy: {numberFormatter.format(listing.best_sell_price)}</button>
-		<button class="btn btn-secondary">Sell: {numberFormatter.format(listing.best_buy_price)}</button
-		>
+		<button class="btn btn-secondary">Sell: {numberFormatter.format(listing.best_buy_price)}</button>
 	</div>
 </li>
