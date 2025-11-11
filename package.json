@@ -34,7 +34,7 @@
 		"@tauri-apps/api": "^2.0.3",
 		"@tauri-apps/cli": "^2.0.4",
 		"@tauri-apps/plugin-deep-link": "~2",
-		"@tauri-apps/plugin-http": "~2",
+		"@tauri-apps/plugin-http": "^2.5.4",
 		"@tauri-apps/plugin-opener": "^2.5.2",
 		"bun-types": "^1.1.33",
 		"lodash": "^4.17.21",

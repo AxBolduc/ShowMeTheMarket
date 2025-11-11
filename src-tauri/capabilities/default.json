@@ -1,34 +1,33 @@
 {
-  "$schema": "../gen/schemas/desktop-schema.json",
-  "identifier": "default",
-  "description": "enables the default permissions",
-  "windows": [
-    "main"
-  ],
-  "permissions": [
-    "core:default",
-    "core:webview:allow-create-webview-window",
-    "deep-link:default",
-    {
-      "identifier": "http:default",
-      "allow": [
-        {
-          "url": "https://account.theshow.com"
-        },
-        {
-          "url": "https://mlb25.theshow.com"
-        }
-      ],
-      "deny": []
-    },
-    {
-      "identifier": "opener:allow-open-url",
-      "allow": [
-        {
-          "url": "https://login.microsoftonline.com/*"
-        }
-      ]
-    },
-    "opener:default"
-  ]
+	"$schema": "../gen/schemas/desktop-schema.json",
+	"identifier": "default",
+	"description": "enables the default permissions",
+	"windows": ["main"],
+	"permissions": [
+		"core:default",
+		"core:webview:allow-create-webview-window",
+		"deep-link:default",
+		{
+			"identifier": "http:default",
+			"allow": [
+				{
+					"url": "https://account.theshow.com"
+				},
+				{
+					"url": "https://mlb25.theshow.com"
+				}
+			],
+			"deny": []
+		},
+		{
+			"identifier": "opener:allow-open-url",
+			"allow": [
+				{
+					"url": "https://login.microsoftonline.com/*"
+				}
+			]
+		},
+		"opener:default"
+	]
 }
+
