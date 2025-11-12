@@ -10,8 +10,6 @@ export async function getListings(opts?: Partial<GetListingsOptions>) {
 
     const url = `${PUBLIC_API_BASE}/listings.json${queryParams.toString() ? '?' + queryParams.toString() : ""}`
 
-    console.log(url)
-
     const response = await fetch(url, {
         method: "GET",
     })

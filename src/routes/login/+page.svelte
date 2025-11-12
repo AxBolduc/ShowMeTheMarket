@@ -1,18 +1,21 @@
 <script lang="ts">
-	import { GlobalState, preventDefault } from '$lib';
-	import { authManager } from '$lib/stores/auth.svelte';
+	import { goto } from '$app/navigation';
+	import { getAuthStore } from '$lib/stores/auth.svelte';
 	import { openUrl } from '@tauri-apps/plugin-opener';
 
-	const gs = new GlobalState();
-
-	$inspect(gs.greet, gs.name);
+	const authStore = getAuthStore();
 
 	async function openXboxLogin() {
-		console.log('clicked');
 		await openUrl(
 			'https://login.microsoftonline.com/consumers/oauth2/v2.0/authorize?client_id=42341ce3-3c4b-426c-acfe-40dea2c0fdab&redirect_uri=com.mlb.xbl.app://redirect&response_type=code&scope=xboxlive.signin'
 		);
 	}
+
+	$effect(() => {
+		if(!authStore.isLoading && authStore.isAuthenticated) {
+			goto("/dashboard")
+		}
+	})
 </script>
 
 <div class="hero min-h-screen">
@@ -23,7 +26,7 @@
 					class="btn-primary btn"
 					onclick={openXboxLogin}
 				>
-				{#if authManager.isLoading}
+				{#if authStore.isLoading}
 					<span class="loading loading-spinner"></span>
 				{:else}
 					<span class="text-2xl">login</span>

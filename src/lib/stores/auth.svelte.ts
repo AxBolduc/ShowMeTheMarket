@@ -1,18 +1,21 @@
 import type { TheShowAuthResponse } from '$lib/schemas/auth';
 import { AuthenticateWithXbox } from '$lib/services/auth';
+import { createContext } from 'svelte';
 
 type AuthManagerState = {
-  username: string | null
-  accountId: number | null
-  accountToken: string | null
-  expires: string | null
-}
+	username: string | null;
+	accountId: number | null;
+	accountToken: string | null;
+	expires: string | null;
+};
+
+const LOCAL_STORAGE_KEY = 'authManager';
 
 class AuthManager {
 	#username = $state<string | null>(null);
 	#accountId = $state<number | null>(null);
 	#token = $state<string | null>(null);
-  #expires = $state<string | null>(null);
+	#expires = $state<string | null>(null);
 
 	#isLoading = $state(false);
 	#error = $state<string | null>(null);
@@ -29,7 +32,7 @@ class AuthManager {
 	get accountId() {
 		return this.#accountId;
 	}
-  get username() {
+	get username() {
 		return this.#username;
 	}
 	get token() {
@@ -72,48 +75,64 @@ class AuthManager {
 	private handleAuthResponse(response: TheShowAuthResponse) {
 		this.#accountId = response.account_id;
 		this.#token = response.account_token;
-    this.#username = response.username
-    this.#expires = response.expiration
+		this.#username = response.username;
+		this.#expires = response.expiration;
 
 		this.#error = null;
 		this.#isLoading = false;
 
-    this.saveToLocalStorage()
+		this.saveToLocalStorage();
 	}
 
-  private loadFromLocalStorage() {
-    const storedInfo = localStorage.getItem("authManager")
+	private loadFromLocalStorage() {
+		const storedInfo = localStorage.getItem(LOCAL_STORAGE_KEY);
 
-    if(!storedInfo) return
+		if (!storedInfo) return;
 
-    const data = JSON.parse(storedInfo) as AuthManagerState
+		const data = JSON.parse(storedInfo) as AuthManagerState;
 
-    this.#accountId = data.accountId
-    this.#expires = data.expires
-    this.#token = data.accountToken
-    this.#username = data.username
+		this.#accountId = data.accountId;
+		this.#expires = data.expires;
+		this.#token = data.accountToken;
+		this.#username = data.username;
 
-    return data
-  }
+		return data;
+	}
 
-  private saveToLocalStorage() {
-    localStorage.setItem("authManager", JSON.stringify({
-      accountId: this.#accountId,
-      accountToken: this.#token,
-      username: this.#username,
-      expires: this.#expires
-    } satisfies AuthManagerState))
-  }
+	private saveToLocalStorage() {
+		localStorage.setItem(
+			LOCAL_STORAGE_KEY,
+			JSON.stringify({
+				accountId: this.#accountId,
+				accountToken: this.#token,
+				username: this.#username,
+				expires: this.#expires
+			} satisfies AuthManagerState)
+		);
+	}
 
 	clearAuth() {
 		this.#token = null;
 		this.#isLoading = false;
 		this.#error = null;
+
 		if (typeof window !== 'undefined') {
-			localStorage.removeItem('authToken');
+			localStorage.removeItem(LOCAL_STORAGE_KEY);
+			console.log('Authentication cleared.');
 		}
-		console.log('Authentication cleared.');
 	}
 }
 
-export const authManager = new AuthManager();
+const [internalGetAuthStore, internalSetAuthStore] = createContext<AuthManager>();
+const getAuthStore = () => {
+	const authStore = internalGetAuthStore();
+	if (!authStore) throw new Error('AuthStore not found');
+	return authStore;
+};
+
+const setAuthStore = () => {
+	const authStore = new AuthManager();
+	return internalSetAuthStore(authStore);
+};
+
+export { getAuthStore, setAuthStore };

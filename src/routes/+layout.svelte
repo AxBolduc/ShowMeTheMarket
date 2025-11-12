@@ -2,30 +2,24 @@
 	import { listen } from '@tauri-apps/api/event';
 	import '../app.css';
 	import { onMount } from 'svelte';
-	import { authManager } from '$lib/stores/auth.svelte';
-	import { page } from '$app/stores';
-	import { goto } from '$app/navigation';
+	import { setAuthStore } from '$lib/stores/auth.svelte';
+	import { QueryClient, QueryClientProvider } from '@tanstack/svelte-query';
+	import { browser } from '$app/environment';
 	let { children } = $props();
 
-	$effect(() => {
-		console.log("checking")
-		if(authManager.isLoading) return
+	const authStore = setAuthStore();
 
-		if(!authManager.isAuthenticated && $page.url.pathname !== '/login') {
-			console.log('Not Authed yet, sending to login page')
-			goto('/login')
+	const queryClient = new QueryClient({
+		defaultOptions: {
+			queries: {
+				enabled: browser
+			}
 		}
-
-		if(authManager.isAuthenticated && ($page.url.pathname === '/login' || $page.url.pathname === '/')) {
-			console.log("Already Authenticated, redirecting to dashbaord")
-			goto('/dashboard')
-		}
-
-	})
+	});
 
 	onMount(() => {
-		listenForDeepLinks()
-	})
+		listenForDeepLinks();
+	});
 
 	async function listenForDeepLinks() {
 		console.log('🔗 [Deep Link] Setting up event listener for deep-link events...');
@@ -34,20 +28,20 @@
 				console.log('🔗🔗🔗 [Deep Link] EVENT RECEIVED!', event);
 				let content = event.payload;
 
-				const authCode = content.split("code=")[1]
+				const authCode = content.split('code=')[1];
 
-				if(!authCode) {
-					console.log("No Auth code found")
-					return
+				if (!authCode) {
+					console.log('No Auth code found');
+					return;
 				}
 
 				try {
-					await authManager.authenticate(authCode)
+					await authStore.authenticate(authCode);
 				} catch (err) {
-					if(err instanceof Error) {
-						console.error(err.message)
+					if (err instanceof Error) {
+						console.error(err.message);
 					} else {
-						console.error(err)
+						console.error(err);
 					}
 				}
 			});
@@ -56,7 +50,8 @@
 			console.error('❌ [Deep Link] Failed to register event listener:', error);
 		}
 	}
-
 </script>
 
-{@render children()}
+<QueryClientProvider client={queryClient}>
+	{@render children()}
+</QueryClientProvider>
