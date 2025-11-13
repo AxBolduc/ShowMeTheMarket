@@ -1,5 +1,6 @@
 <script lang="ts">
 	import { getCollection } from '$lib/services/collections';
+	import { getInventoryItems } from '$lib/services/inventory';
 	import { getAuthStore } from '$lib/stores/auth.svelte';
 	import { createQuery } from '@tanstack/svelte-query';
 	import { page } from '$app/state';
@@ -27,11 +28,69 @@
 		enabled: !!collectionId && !!authStore.accountId && !!authStore.token
 	}));
 
+	// Extract missing item IDs that need to be fetched
+	const missingItemIds = $derived.by(() => {
+		if (!collectionQuery.data?.success) return [];
+
+		// Create a map of existing inventory items
+		const existingItemIds = new Set(
+			collectionQuery.data.inventory_items.map((item) => item.id.toString())
+		);
+
+		// Find item IDs in the collection that don't have inventory data
+		return collectionQuery.data.collection.items
+			.filter((item) => !existingItemIds.has(item.id))
+			.map((item) => item.id);
+	});
+
+	// Query to fetch missing inventory items
+	const inventoryItemsQuery = createQuery(() => ({
+		queryKey: ['inventoryItems', missingItemIds],
+		queryFn: () => {
+			if (!authStore.accountId || !authStore.token || missingItemIds.length === 0) {
+				return null;
+			}
+
+			return getInventoryItems({
+				itemIds: missingItemIds,
+				authInfo: {
+					accountId: authStore.accountId.toString(),
+					token: authStore.token
+				}
+			});
+		},
+		enabled:
+			!!authStore.accountId &&
+			!!authStore.token &&
+			collectionQuery.isSuccess &&
+			missingItemIds.length > 0
+	}));
+
+	// Combine inventory items from both API calls
+	const inventoryItems = $derived.by(() => {
+		if (!collectionQuery.data?.success) return undefined;
+
+		// Start with items from the collection response
+		const items = new Map(
+			collectionQuery.data.inventory_items.map((item) => [item.id.toString(), item])
+		);
+
+		// Add items from the inventory items query if available
+		if (inventoryItemsQuery.data?.success) {
+			inventoryItemsQuery.data.inventory_items.forEach((item) => {
+				items.set(item.id.toString(), item);
+			});
+		}
+
+		return Object.fromEntries(items);
+	});
+
 	// Function to get inventory item by ID
 	function getInventoryItemById(id: string) {
-		if (!collectionQuery.data?.success) return null;
+		if (inventoryItems === undefined) return null;
 
-		return collectionQuery.data.inventory_items.find((item) => item.id.toString() === id);
+		const item = inventoryItems[id];
+		return item;
 	}
 
 	// Function to handle back navigation
@@ -84,6 +143,26 @@
 					/>
 				</svg>
 				<span>Error loading collection. Please try again.</span>
+			</div>
+		</div>
+	{:else if inventoryItemsQuery.isError}
+		<div class="alert alert-warning shadow-lg">
+			<div class="flex items-center">
+				<svg
+					xmlns="http://www.w3.org/2000/svg"
+					class="h-6 w-6 mr-2"
+					fill="none"
+					viewBox="0 0 24 24"
+					stroke="currentColor"
+				>
+					<path
+						stroke-linecap="round"
+						stroke-linejoin="round"
+						stroke-width="2"
+						d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"
+					/>
+				</svg>
+				<span>Collection loaded but some item details could not be fetched.</span>
 			</div>
 		</div>
 	{:else if !collectionQuery.data?.success}
@@ -140,15 +219,24 @@
 			<div class="lg:col-span-2">
 				<h3 class="text-lg font-bold mb-4">Collection Items</h3>
 
+				{#if inventoryItemsQuery.isLoading && missingItemIds.length > 0}
+					<div class="flex items-center gap-2 bg-info/20 p-3 rounded-lg mb-4">
+						<div class="loading loading-spinner loading-sm"></div>
+						<span>Loading additional item details...</span>
+					</div>
+				{/if}
+
 				<div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4">
 					{#each collectionQuery.data.collection.items as item}
 						{@const inventoryItem = getInventoryItemById(item.id)}
 						{@const isOwned = item.quantity !== '0'}
+						{@const isCollected = item.collection_index !== '0'}
+						{@const isLoading = inventoryItemsQuery.isLoading && missingItemIds.includes(item.id)}
 
 						<div
-							class="card bg-base-200 border {isOwned
+							class="card bg-base-200 border {isCollected
 								? 'border-success'
-								: 'border-base-300'} shadow-lg"
+								: 'border-base-300'} shadow-lg {isLoading ? 'animate-pulse' : ''}"
 						>
 							{#if inventoryItem}
 								<figure class="px-3 pt-3">
@@ -173,6 +261,11 @@
 											<span class="badge badge-error badge-sm">Not Owned</span>
 										{/if}
 									</div>
+								</div>
+							{:else if isLoading}
+								<div class="card-body p-3 flex flex-col items-center justify-center min-h-32">
+									<div class="loading loading-spinner"></div>
+									<p class="text-sm mt-2">Loading item...</p>
 								</div>
 							{:else}
 								<div class="card-body p-3 flex items-center justify-center min-h-32">
