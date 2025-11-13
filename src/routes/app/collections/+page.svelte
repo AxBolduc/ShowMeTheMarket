@@ -78,9 +78,9 @@
 	{:else}
 		<div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
 			{#each collectionGroupsQuery.data.collection_groups as group}
-				<div
-					class="card bg-base-300 shadow-lg hover:shadow-2xl transition-all cursor-pointer border border-primary/20"
-					onclick={() => navigateToGroup(group.id)}
+				<a
+					class="card bg-base-300 shadow-white/5 shadow-lg hover:shadow-2xl transition-all cursor-pointer"
+					href="/app/collections/{group.id}"
 				>
 					<figure class="px-4 pt-4 flex items-center justify-center">
 						<img
@@ -91,9 +91,9 @@
 						/>
 					</figure>
 					<div class="card-body items-center text-center p-4 bg-base-200">
-						<h2 class="card-title text-lg font-medium text-primary">{group.name}</h2>
+						<h2 class="card-title text-lg font-medium">{group.name}</h2>
 					</div>
-				</div>
+				</a>
 			{/each}
 		</div>
 	{/if}
