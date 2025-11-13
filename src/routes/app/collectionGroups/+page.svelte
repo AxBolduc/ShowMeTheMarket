@@ -22,10 +22,6 @@
 			});
 		}
 	}));
-
-	function navigateToGroup(groupId: string) {
-		goto(`/app/collections/${groupId}`);
-	}
 </script>
 
 <div class="p-4">
@@ -80,7 +76,7 @@
 			{#each collectionGroupsQuery.data.collection_groups as group}
 				<a
 					class="card bg-base-300 shadow-white/5 shadow-lg hover:shadow-2xl transition-all cursor-pointer"
-					href="/app/collections/{group.id}"
+					href="/app/collectionGroups/{group.id}"
 				>
 					<figure class="px-4 pt-4 flex items-center justify-center">
 						<img

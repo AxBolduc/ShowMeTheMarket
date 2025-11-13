@@ -33,7 +33,7 @@
 		},
 		{
 			name: 'Collections',
-			route: '/app/collections',
+			route: '/app/collectionGroups',
 			icon: 'M7 3a1 1 0 000 2h6a1 1 0 100-2H7zM4 7a1 1 0 011-1h10a1 1 0 110 2H5a1 1 0 01-1-1zM2 11a2 2 0 012-2h12a2 2 0 012 2v4a2 2 0 01-2 2H4a2 2 0 01-2-2v-4z'
 		}
 	];
@@ -96,9 +96,6 @@
 			<!-- Navigation links -->
 			<ul>
 				{#each navItems as item}
-					{#if item.divider}
-						<div class="divider my-2"></div>
-					{/if}
 					<li>
 						<a
 							href={item.route}
