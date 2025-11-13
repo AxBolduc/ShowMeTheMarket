@@ -97,7 +97,7 @@
 	{:else}
 		<div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
 			{#each collectionsQuery.data.collections as collection}
-				<div class="card bg-base-300 shadow-lg border border-primary/20">
+				<div class="card bg-base-300 shadow-lg shadow-white/5">
 					<figure class="px-4 pt-4 flex items-center justify-center h-60">
 						<img
 							src={collection.texture_url}
@@ -107,7 +107,7 @@
 						/>
 					</figure>
 					<div class="card-body p-4 bg-base-200">
-						<h2 class="card-title text-lg text-primary">{collection.name}</h2>
+						<h2 class="card-title text-lg">{collection.name}</h2>
 						<div class="flex justify-between items-center mt-2">
 							<div class="flex items-center">
 								<span class="text-sm mr-2 font-medium">Progress:</span>
