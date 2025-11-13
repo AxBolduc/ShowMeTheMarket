@@ -12,26 +12,23 @@
 	}
 
 	$effect(() => {
-		if(!authStore.isLoading && authStore.isAuthenticated) {
-			goto("/dashboard")
+		if (!authStore.isLoading && authStore.isAuthenticated) {
+			goto('/app/dashboard');
 		}
-	})
+	});
 </script>
 
 <div class="hero min-h-screen">
 	<div class="hero-content text-center">
 		<div class="max-w-md flex flex-col gap-4">
-				<h1 class="text-5xl">Login with Xbox</h1>
-				<button
-					class="btn-primary btn"
-					onclick={openXboxLogin}
-				>
+			<h1 class="text-5xl">Login with Xbox</h1>
+			<button class="btn-primary btn" onclick={openXboxLogin}>
 				{#if authStore.isLoading}
 					<span class="loading loading-spinner"></span>
 				{:else}
 					<span class="text-2xl">login</span>
 				{/if}
-				</button>
+			</button>
 		</div>
 	</div>
 </div>
