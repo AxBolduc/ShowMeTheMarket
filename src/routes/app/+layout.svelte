@@ -1,7 +1,7 @@
 <script lang="ts">
 	// Import page from state instead of stores (which is deprecated in Svelte 5/SvelteKit 2.12+)
 	import { page } from '$app/state';
-	import { onMount } from 'svelte';
+	import Wallet from '$lib/components/wallet.svelte';
 
 	const { children } = $props();
 
@@ -69,11 +69,13 @@
 				</label>
 			</div>
 			<div class="navbar-center w-2/4 flex justify-center">
-				<a class="btn btn-ghost text-xl" href="/app/dashboard" on:click={closeDrawer}
+				<a class="btn btn-ghost text-xl" href="/app/dashboard" onclick={closeDrawer}
 					>Show Me The Market</a
 				>
 			</div>
-			<div class="navbar-end w-1/4"></div>
+			<div class="navbar-end w-1/4">
+				<Wallet />
+			</div>
 		</div>
 
 		<!-- Page content -->
@@ -85,10 +87,14 @@
 	<div class="drawer-side">
 		<label for="app-drawer" aria-label="close sidebar" class="drawer-overlay"></label>
 
-		<div class="menu p-4 w-64 min-h-full bg-base-200 text-base-content">
+		<div class="menu p-4 w-64 min-h-full bg-base-200 text-base-content gap-2">
 			<!-- App logo/title -->
-			<div class="flex items-center mb-8 px-2">
+			<div class="flex items-center px-2">
 				<span class="font-bold text-xl">Show Me The Market</span>
+			</div>
+
+			<div class="py-2">
+				<Wallet />
 			</div>
 
 			<!-- Navigation links -->
@@ -100,7 +106,7 @@
 					<li>
 						<a
 							href={item.route}
-							on:click={closeDrawer}
+							onclick={closeDrawer}
 							class={isActive(item.route) ? 'active bg-base-300 font-medium' : ''}
 						>
 							<svg
