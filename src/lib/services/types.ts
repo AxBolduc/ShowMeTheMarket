@@ -1,0 +1,1 @@
+export type AuthInfo = { accountId: string; token: string }
