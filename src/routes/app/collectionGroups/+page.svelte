@@ -2,7 +2,6 @@
 	import { getCollectionGroups } from '$lib/services/collections';
 	import { getAuthStore } from '$lib/stores/auth.svelte';
 	import { createQuery } from '@tanstack/svelte-query';
-	import { goto } from '$app/navigation';
 
 	const authStore = getAuthStore();
 
