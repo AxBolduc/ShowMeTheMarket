@@ -87,7 +87,9 @@
 	<div class="drawer-side">
 		<label for="app-drawer" aria-label="close sidebar" class="drawer-overlay"></label>
 
-		<div class="menu p-4 w-64 min-h-full bg-base-200 text-base-content gap-2">
+		<div
+			class="menu p-4 w-64 h-screen bg-base-200 text-base-content gap-2 overflow-y-auto overscroll-none"
+		>
 			<!-- App logo/title -->
 			<div class="flex items-center px-2">
 				<span class="font-bold text-xl">Show Me The Market</span>

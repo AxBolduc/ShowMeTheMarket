@@ -3,7 +3,7 @@
 @plugin '@tailwindcss/typography';
 @plugin '@tailwindcss/forms';
 @plugin "daisyui" {
-  themes: dark --default
+	themes: dark --default;
 }
 
 /*
@@ -15,11 +15,30 @@
   color utility to any element that depends on these defaults.
 */
 @layer base {
-  *,
-  ::after,
-  ::before,
-  ::backdrop,
-  ::file-selector-button {
-    border-color: var(--color-gray-200, currentcolor);
-  }
+	*,
+	::after,
+	::before,
+	::backdrop,
+	::file-selector-button {
+		border-color: var(--color-gray-200, currentcolor);
+	}
+
+	/* Fix for macOS overscroll effect */
+	html,
+	body {
+		overscroll-behavior: none;
+	}
+
+	/* Fix drawer side overscroll */
+	.drawer-side {
+		overscroll-behavior: contain;
+		-webkit-overflow-scrolling: touch;
+	}
+
+	/* Ensure sidebar content doesn't get cut off */
+	.drawer-side .menu {
+		height: 100vh;
+		overflow-y: auto;
+		overscroll-behavior: contain;
+	}
 }
