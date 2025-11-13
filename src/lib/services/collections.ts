@@ -2,6 +2,10 @@ import { GAME_API_BASE } from '$lib/constants';
 import z, { ZodError } from 'zod';
 import type { AuthInfo } from './types';
 import { fetch } from '@tauri-apps/plugin-http';
+import {
+	GetCollectionGroupsResponseSchema,
+	GetCollectionsInGroupResponseSchema
+} from '$lib/schemas/collections';
 
 export async function getCollectionGroups({ authInfo }: { authInfo: AuthInfo }) {
 	const url = `${GAME_API_BASE}/collection_view_groups.json`;
@@ -28,7 +32,9 @@ export async function getCollectionGroups({ authInfo }: { authInfo: AuthInfo }) 
 
 		console.log(data);
 
-		return data;
+		const parsedData = GetCollectionGroupsResponseSchema.parse(data);
+
+		return parsedData;
 	} catch (err) {
 		const errMsg = 'Validation failed for getCollectionGroups request';
 
@@ -73,7 +79,9 @@ export async function getCollectionsInGroup({
 
 		console.log(data);
 
-		return data;
+		const parsedData = GetCollectionsInGroupResponseSchema.parse(data);
+
+		return parsedData;
 	} catch (err) {
 		const errMsg = 'Validation failed for getcollectionsInGroup request';
 
