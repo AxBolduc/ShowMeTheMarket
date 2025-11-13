@@ -1,10 +1,14 @@
-import { GAME_API_BASE } from "$lib/constants";
-import z, { ZodError } from "zod";
-import type { AuthInfo } from "./types";
-import {fetch} from '@tauri-apps/plugin-http'
+import { GAME_API_BASE } from '$lib/constants';
+import z, { ZodError } from 'zod';
+import type { AuthInfo } from './types';
+import { fetch } from '@tauri-apps/plugin-http';
+import {
+	GetCollectionGroupsResponseSchema,
+	GetCollectionsInGroupResponseSchema
+} from '$lib/schemas/collections';
 
-export async function getCollectionGroups({authInfo}: {authInfo: AuthInfo}) {
-const url = `${GAME_API_BASE}/collection_view_groups.json`;
+export async function getCollectionGroups({ authInfo }: { authInfo: AuthInfo }) {
+	const url = `${GAME_API_BASE}/collection_view_groups.json`;
 
 	const body = JSON.stringify({
 		account_id: authInfo.accountId?.toString(),
@@ -28,7 +32,9 @@ const url = `${GAME_API_BASE}/collection_view_groups.json`;
 
 		console.log(data);
 
-        return data
+		const parsedData = GetCollectionGroupsResponseSchema.parse(data);
+
+		return parsedData;
 	} catch (err) {
 		const errMsg = 'Validation failed for getCollectionGroups request';
 
@@ -41,13 +47,19 @@ const url = `${GAME_API_BASE}/collection_view_groups.json`;
 	}
 }
 
-export async function getCollectionsInGroup({groupId, authInfo}: {groupId: string, authInfo: AuthInfo}) {
-const url = `${GAME_API_BASE}/collection_view_collections.json`;
+export async function getCollectionsInGroup({
+	groupId,
+	authInfo
+}: {
+	groupId: string;
+	authInfo: AuthInfo;
+}) {
+	const url = `${GAME_API_BASE}/collection_view_collections.json`;
 
 	const body = JSON.stringify({
 		account_id: authInfo.accountId?.toString(),
 		account_token: authInfo.token,
-        group_id: groupId
+		group_id: groupId
 	});
 
 	const result = await fetch(url, {
@@ -67,7 +79,9 @@ const url = `${GAME_API_BASE}/collection_view_collections.json`;
 
 		console.log(data);
 
-        return data
+		const parsedData = GetCollectionsInGroupResponseSchema.parse(data);
+
+		return parsedData;
 	} catch (err) {
 		const errMsg = 'Validation failed for getcollectionsInGroup request';
 
@@ -79,3 +93,4 @@ const url = `${GAME_API_BASE}/collection_view_collections.json`;
 		throw new Error('unknown error');
 	}
 }
+

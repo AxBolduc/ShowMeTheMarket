@@ -1,11 +1,10 @@
 import { GAME_API_BASE } from '$lib/constants';
 import { GetStubsResponseSchema } from '$lib/schemas/wallet';
-import { getAuthStore } from '$lib/stores/auth.svelte';
 import { fetch } from '@tauri-apps/plugin-http';
 import z, { ZodError } from 'zod';
 import type { AuthInfo } from './types';
 
-export async function getStubs({ authInfo }: { authInfo: AuthInfo}) {
+export async function getStubs({ authInfo }: { authInfo: AuthInfo }) {
 	const url = `${GAME_API_BASE}/view_my_wallet.json`;
 
 	const body = JSON.stringify({

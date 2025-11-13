@@ -6,11 +6,13 @@
 
 	const authStore = getAuthStore();
 
+	const numberFormatter = new Intl.NumberFormat();
+
 	const stubsQuery = createQuery(() => ({
 		queryKey: ['stubs'],
 		queryFn: () => {
 			if (!authStore.accountId || !authStore.token) {
-                console.error("No auth in auth store")
+				console.error('No auth in auth store');
 				return null;
 			}
 
@@ -26,18 +28,18 @@
 	$effect(() => {
 		if (!stubsQuery.isLoading && !stubsQuery.data?.success) {
 			console.log('Not Authenticated');
-            authStore.clearAuth();
+			authStore.clearAuth();
 			goto('/login');
 		}
 	});
 </script>
 
-<div class="bg-primary rounded-lg p-4">
+<div class="bg-primary rounded-lg px-4 py-2">
 	{#if stubsQuery.isLoading}
 		<span>loading...</span>
 	{:else}
-		<span class="text-lg text-primary-content"
-			>{stubsQuery.data?.success ? stubsQuery.data.data : 'NA'}</span
+		<span class="text-md text-primary-content"
+			>Stubs: {stubsQuery.data?.success ? numberFormatter.format(stubsQuery.data.data) : 'NA'}</span
 		>
 	{/if}
 </div>
