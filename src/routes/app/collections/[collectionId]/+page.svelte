@@ -4,6 +4,7 @@
 	import { getAuthStore } from '$lib/stores/auth.svelte';
 	import { createQuery } from '@tanstack/svelte-query';
 	import { page } from '$app/state';
+	import InventoryItemCard from '$lib/components/InventoryItemCard.svelte';
 
 	const authStore = getAuthStore();
 	const collectionId = $state(page.params.collectionId);
@@ -87,7 +88,7 @@
 
 	// Function to get inventory item by ID
 	function getInventoryItemById(id: string) {
-		if (inventoryItems === undefined) return null;
+		if (inventoryItems === undefined) return undefined;
 
 		const item = inventoryItems[id];
 		return item;
@@ -233,51 +234,14 @@
 						{@const isCollected = item.collection_index !== '0'}
 						{@const isLoading = inventoryItemsQuery.isLoading && missingItemIds.includes(item.id)}
 
-						<div
-							class="card bg-base-200 border {isCollected
-								? 'border-success'
-								: 'border-base-300'} shadow-lg {isLoading ? 'animate-pulse' : ''}"
-						>
-							{#if inventoryItem}
-								<figure class="px-3 pt-3">
-									<img
-										src={inventoryItem.baked_img || inventoryItem.img}
-										alt={inventoryItem.name}
-										class="rounded-lg w-full object-contain h-32"
-										loading="lazy"
-									/>
-								</figure>
-								<div class="card-body p-3">
-									<h4 class="card-title text-sm">{inventoryItem.name}</h4>
-									<div class="flex items-center justify-between">
-										<span class="badge badge-outline">{inventoryItem.rarity}</span>
-										<span class="badge badge-outline">{inventoryItem.ovr} OVR</span>
-									</div>
-									<div class="mt-2 flex justify-between">
-										<span class="text-xs opacity-70">{inventoryItem.team}</span>
-										{#if isOwned}
-											<span class="badge badge-success badge-sm">Owned</span>
-										{:else}
-											<span class="badge badge-error badge-sm">Not Owned</span>
-										{/if}
-									</div>
-								</div>
-							{:else if isLoading}
-								<div class="card-body p-3 flex flex-col items-center justify-center min-h-32">
-									<div class="loading loading-spinner"></div>
-									<p class="text-sm mt-2">Loading item...</p>
-								</div>
-							{:else}
-								<div class="card-body p-3 flex items-center justify-center min-h-32">
-									<h4 class="card-title text-sm opacity-50">Item #{item.id}</h4>
-									{#if isOwned}
-										<span class="badge badge-success badge-sm">Owned</span>
-									{:else}
-										<span class="badge badge-error badge-sm">Not Owned</span>
-									{/if}
-								</div>
-							{/if}
-						</div>
+						<InventoryItemCard
+							item={inventoryItem}
+							itemId={item.id}
+							{isOwned}
+							{isCollected}
+							{isLoading}
+							showDetails={true}
+						/>
 					{/each}
 				</div>
 			</div>
