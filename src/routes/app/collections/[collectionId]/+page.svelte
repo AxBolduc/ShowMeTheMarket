@@ -102,7 +102,7 @@
 		window.history.back();
 	}
 
-	// Function to handle selected cards action
+	// Function to handle collecting selected cards
 	function handleSelectedCards() {
 		// Get the selected inventory items
 		const selectedItemsArray = [...selectedItems]
@@ -110,13 +110,13 @@
 			.filter(Boolean);
 
 		// Log selected items for now (replace with your implementation)
-		console.log('Processing selected items:', selectedItemsArray);
+		console.log('Collecting selected items:', selectedItemsArray);
 
-		// TODO: Implement the action you want to perform with selected cards
+		// TODO: Implement the collection action for selected cards
 		// Examples:
-		// - Open a modal with options
-		// - Navigate to a new page with the selection
-		// - Perform an API call
+		// - Add items to collection
+		// - Open a collection confirmation modal
+		// - Perform collection API call
 	}
 </script>
 
@@ -313,11 +313,11 @@
 </div>
 
 {#if selectedItems.size > 0}
-	<div class="fixed bottom-6 right-6 transition-opacity duration-300 ease-in-out">
-		<div class="tooltip tooltip-left" data-tip="Process selected cards">
+	<div class="fixed bottom-8 right-8 transition-opacity duration-300 ease-in-out">
+		<div class="tooltip tooltip-left" data-tip="Collect selected cards">
 			<button
-				class="btn btn-primary btn-circle shadow-lg flex items-center justify-center gap-2"
-				aria-label="Process selected cards"
+				class="btn btn-primary btn-lg shadow-lg flex items-center justify-center gap-2 px-10 py-3 text-xl min-w-48"
+				aria-label="Collect selected cards"
 				tabindex="0"
 				onclick={handleSelectedCards}
 				onkeydown={(e) => {
@@ -327,23 +327,10 @@
 					}
 				}}
 			>
-				<span class="badge badge-sm badge-accent absolute -top-2 -right-2"
+				<span class="badge badge-md badge-accent absolute -top-3 -right-3 text-base"
 					>{selectedItems.size}</span
 				>
-				<svg
-					xmlns="http://www.w3.org/2000/svg"
-					fill="none"
-					viewBox="0 0 24 24"
-					stroke-width="1.5"
-					stroke="currentColor"
-					class="w-6 h-6"
-				>
-					<path
-						stroke-linecap="round"
-						stroke-linejoin="round"
-						d="M9 12.75L11.25 15 15 9.75M21 12a9 9 0 11-18 0 9 9 0 0118 0z"
-					/>
-				</svg>
+				Collect
 			</button>
 		</div>
 	</div>
