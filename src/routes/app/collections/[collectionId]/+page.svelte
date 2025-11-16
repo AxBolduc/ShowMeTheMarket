@@ -5,6 +5,7 @@
 	import { createQuery } from '@tanstack/svelte-query';
 	import { page } from '$app/state';
 	import InventoryItemCard from '$lib/components/InventoryItemCard.svelte';
+	import { SvelteSet } from 'svelte/reactivity';
 
 	const authStore = getAuthStore();
 	const collectionId = $state(page.params.collectionId);
@@ -86,6 +87,8 @@
 		return Object.fromEntries(items);
 	});
 
+	let selectedItems = $state(new SvelteSet<string>());
+
 	// Function to get inventory item by ID
 	function getInventoryItemById(id: string) {
 		if (inventoryItems === undefined) return undefined;
@@ -98,9 +101,26 @@
 	function goBack() {
 		window.history.back();
 	}
+
+	// Function to handle selected cards action
+	function handleSelectedCards() {
+		// Get the selected inventory items
+		const selectedItemsArray = [...selectedItems]
+			.map((id) => getInventoryItemById(id))
+			.filter(Boolean);
+
+		// Log selected items for now (replace with your implementation)
+		console.log('Processing selected items:', selectedItemsArray);
+
+		// TODO: Implement the action you want to perform with selected cards
+		// Examples:
+		// - Open a modal with options
+		// - Navigate to a new page with the selection
+		// - Perform an API call
+	}
 </script>
 
-<div class="p-4">
+<div class="p-4 relative">
 	<div class="flex items-center mb-6">
 		<button class="btn btn-ghost btn-sm mr-4" onclick={goBack}>
 			<svg
@@ -233,6 +253,7 @@
 						{@const isOwned = item.quantity !== '0'}
 						{@const isCollected = item.collection_index !== '0'}
 						{@const isLoading = inventoryItemsQuery.isLoading && missingItemIds.includes(item.id)}
+						{@const isSelected = selectedItems.has(item.id)}
 
 						<InventoryItemCard
 							item={inventoryItem}
@@ -240,7 +261,15 @@
 							{isOwned}
 							{isCollected}
 							{isLoading}
+							{isSelected}
 							showDetails={true}
+							onClick={() => {
+								if (!isOwned) return;
+
+								selectedItems.has(item.id)
+									? selectedItems.delete(item.id)
+									: selectedItems.add(item.id);
+							}}
 						/>
 					{/each}
 				</div>
@@ -282,3 +311,40 @@
 		</div>
 	{/if}
 </div>
+
+{#if selectedItems.size > 0}
+	<div class="fixed bottom-6 right-6 transition-opacity duration-300 ease-in-out">
+		<div class="tooltip tooltip-left" data-tip="Process selected cards">
+			<button
+				class="btn btn-primary btn-circle shadow-lg flex items-center justify-center gap-2"
+				aria-label="Process selected cards"
+				tabindex="0"
+				onclick={handleSelectedCards}
+				onkeydown={(e) => {
+					if (e.key === 'Enter' || e.key === ' ') {
+						e.preventDefault();
+						handleSelectedCards();
+					}
+				}}
+			>
+				<span class="badge badge-sm badge-accent absolute -top-2 -right-2"
+					>{selectedItems.size}</span
+				>
+				<svg
+					xmlns="http://www.w3.org/2000/svg"
+					fill="none"
+					viewBox="0 0 24 24"
+					stroke-width="1.5"
+					stroke="currentColor"
+					class="w-6 h-6"
+				>
+					<path
+						stroke-linecap="round"
+						stroke-linejoin="round"
+						d="M9 12.75L11.25 15 15 9.75M21 12a9 9 0 11-18 0 9 9 0 0118 0z"
+					/>
+				</svg>
+			</button>
+		</div>
+	</div>
+{/if}
