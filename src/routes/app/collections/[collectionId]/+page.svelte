@@ -1,14 +1,15 @@
 <script lang="ts">
-	import { getCollection } from '$lib/services/collections';
+	import { getCollection, collectCards } from '$lib/services/collections';
 	import { getInventoryItems } from '$lib/services/inventory';
 	import { getAuthStore } from '$lib/stores/auth.svelte';
-	import { createQuery } from '@tanstack/svelte-query';
+	import { createQuery, createMutation, useQueryClient } from '@tanstack/svelte-query';
 	import { page } from '$app/state';
 	import InventoryItemCard from '$lib/components/InventoryItemCard.svelte';
 	import { SvelteSet } from 'svelte/reactivity';
 
 	const authStore = getAuthStore();
 	const collectionId = $state(page.params.collectionId);
+	const queryClient = useQueryClient();
 
 	// Query to fetch collection details
 	const collectionQuery = createQuery(() => ({
@@ -89,6 +90,69 @@
 
 	let selectedItems = $state(new SvelteSet<string>());
 
+	// Track notification state
+	let showSuccessToast = $state(false);
+	let showErrorToast = $state(false);
+	let toastMessage = $state('');
+
+	// Hide toast after a delay
+	function showToast(type: 'success' | 'error', message: string) {
+		if (type === 'success') {
+			showSuccessToast = true;
+			showErrorToast = false;
+		} else {
+			showErrorToast = true;
+			showSuccessToast = false;
+		}
+		toastMessage = message;
+
+		// Auto-hide after 3 seconds
+		setTimeout(() => {
+			showSuccessToast = false;
+			showErrorToast = false;
+		}, 3000);
+	}
+
+	// Create the mutation for collecting cards
+	const collectCardsMutation = createMutation(() => ({
+		mutationFn: (itemIds: string[]) => {
+			if (!authStore.accountId || !authStore.accountToken) {
+				throw new Error('Authentication required');
+			}
+
+			if (!collectionId) {
+				throw new Error('Collection ID required');
+			}
+
+			return collectCards({
+				authInfo: {
+					accountId: authStore.accountId.toString(),
+					token: authStore.accountToken
+				},
+				collectionId,
+				itemIds
+			});
+		},
+		onSuccess: (data) => {
+			// Clear selected items
+			selectedItems.clear();
+
+			// Invalidate queries to refresh the data
+			queryClient.invalidateQueries({ queryKey: ['collection', collectionId] });
+
+			// Show success toast
+			const message =
+				data.success && data.collection.collection.is_complete === 'True'
+					? 'Collection completed!'
+					: 'Cards added to collection!';
+			showToast('success', message);
+		},
+		onError: (error) => {
+			console.error('Failed to collect cards:', error);
+			showToast('error', 'Failed to collect cards. Please try again.');
+		}
+	}));
+
 	// Function to get inventory item by ID
 	function getInventoryItemById(id: string) {
 		if (inventoryItems === undefined) return undefined;
@@ -104,19 +168,11 @@
 
 	// Function to handle collecting selected cards
 	function handleSelectedCards() {
-		// Get the selected inventory items
-		const selectedItemsArray = [...selectedItems]
-			.map((id) => getInventoryItemById(id))
-			.filter(Boolean);
+		const itemIds = [...selectedItems];
+		if (itemIds.length === 0) return;
 
-		// Log selected items for now (replace with your implementation)
-		console.log('Collecting selected items:', selectedItemsArray);
-
-		// TODO: Implement the collection action for selected cards
-		// Examples:
-		// - Add items to collection
-		// - Open a collection confirmation modal
-		// - Perform collection API call
+		// Trigger the mutation to collect cards
+		collectCardsMutation.mutate(itemIds);
 	}
 </script>
 
@@ -326,12 +382,33 @@
 						handleSelectedCards();
 					}
 				}}
+				disabled={collectCardsMutation.isPending}
 			>
-				<span class="badge badge-md badge-accent absolute -top-3 -right-3 text-base"
-					>{selectedItems.size}</span
-				>
+				{#if collectCardsMutation.isPending}
+					<span class="loading loading-spinner loading-md"></span>
+				{:else}
+					<span class="badge badge-md badge-accent absolute -top-3 -right-3 text-base"
+						>{selectedItems.size}</span
+					>
+				{/if}
 				Collect
 			</button>
+		</div>
+	</div>
+{/if}
+
+{#if showSuccessToast}
+	<div class="toast toast-top toast-end">
+		<div class="alert alert-success">
+			<span>{toastMessage}</span>
+		</div>
+	</div>
+{/if}
+
+{#if showErrorToast}
+	<div class="toast toast-top toast-end">
+		<div class="alert alert-error">
+			<span>{toastMessage}</span>
 		</div>
 	</div>
 {/if}

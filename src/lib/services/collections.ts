@@ -152,7 +152,7 @@ export async function collectCards({
 	collectionId: string;
 	itemIds: string[];
 }) {
-	const url = `${GAME_API_BASE}/collection_view.json`;
+	const url = `${GAME_API_BASE}/collection_advance.json`;
 
 	const body = JSON.stringify({
 		account_id: authInfo.accountId?.toString(),
