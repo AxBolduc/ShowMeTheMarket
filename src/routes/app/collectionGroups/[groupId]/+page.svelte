@@ -101,6 +101,9 @@
 				<div
 					class="card bg-base-300 shadow-lg shadow-white/5 cursor-pointer hover:shadow-xl transition-shadow"
 					onclick={() => goto(`/app/collections/${collection.id}`)}
+					tabindex="0"
+					role="button"
+					onkeypress={() => goto(`/app/collections/${collection.id}`)}
 				>
 					<figure class="px-4 pt-4 flex items-center justify-center h-60">
 						<img
