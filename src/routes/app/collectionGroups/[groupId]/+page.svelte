@@ -3,6 +3,7 @@
 	import { getAuthStore } from '$lib/stores/auth.svelte';
 	import { createQuery } from '@tanstack/svelte-query';
 	import { page } from '$app/state';
+	import { goto } from '$app/navigation';
 
 	const authStore = getAuthStore();
 	const groupId = $state(page.params.groupId);
@@ -11,7 +12,7 @@
 	const collectionsQuery = createQuery(() => ({
 		queryKey: ['collections', groupId],
 		queryFn: () => {
-			if (!authStore.accountId || !authStore.token || !groupId) {
+			if (!authStore.accountId || !authStore.accountToken || !groupId) {
 				console.error('No auth in auth store');
 				return null;
 			}
@@ -20,11 +21,11 @@
 				groupId,
 				authInfo: {
 					accountId: authStore.accountId.toString(),
-					token: authStore.token
+					token: authStore.accountToken
 				}
 			});
 		},
-		enabled: !!groupId && !!authStore.accountId && !!authStore.token
+		enabled: !!groupId && !!authStore.accountId && !!authStore.accountToken
 	}));
 </script>
 
@@ -97,7 +98,13 @@
 	{:else}
 		<div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
 			{#each collectionsQuery.data.collections as collection}
-				<div class="card bg-base-300 shadow-lg shadow-white/5">
+				<div
+					class="card bg-base-300 shadow-lg shadow-white/5 cursor-pointer hover:shadow-xl transition-shadow"
+					onclick={() => goto(`/app/collections/${collection.id}`)}
+					tabindex="0"
+					role="button"
+					onkeypress={() => goto(`/app/collections/${collection.id}`)}
+				>
 					<figure class="px-4 pt-4 flex items-center justify-center h-60">
 						<img
 							src={collection.texture_url}

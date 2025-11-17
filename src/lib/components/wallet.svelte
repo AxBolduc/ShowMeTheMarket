@@ -11,7 +11,7 @@
 	const stubsQuery = createQuery(() => ({
 		queryKey: ['stubs'],
 		queryFn: () => {
-			if (!authStore.accountId || !authStore.token) {
+			if (!authStore.accountId || !authStore.accountToken) {
 				console.error('No auth in auth store');
 				return null;
 			}
@@ -19,7 +19,7 @@
 			return getStubs({
 				authInfo: {
 					accountId: authStore.accountId.toString(),
-					token: authStore.token
+					token: authStore.accountToken
 				}
 			});
 		}

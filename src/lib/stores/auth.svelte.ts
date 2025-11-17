@@ -6,6 +6,7 @@ type AuthManagerState = {
 	username: string | null;
 	accountId: number | null;
 	accountToken: string | null;
+	tsToken: string | null;
 	expires: string | null;
 };
 
@@ -14,7 +15,8 @@ const LOCAL_STORAGE_KEY = 'authManager';
 class AuthManager {
 	#username = $state<string | null>(null);
 	#accountId = $state<number | null>(null);
-	#token = $state<string | null>(null);
+	#accountToken = $state<string | null>(null);
+	#tsToken = $state<string | null>(null);
 	#expires = $state<string | null>(null);
 
 	#isLoading = $state(false);
@@ -35,8 +37,11 @@ class AuthManager {
 	get username() {
 		return this.#username;
 	}
-	get token() {
-		return this.#token;
+	get accountToken() {
+		return this.#accountToken;
+	}
+	get tsToken() {
+		return this.#tsToken;
 	}
 	get isLoading() {
 		return this.#isLoading;
@@ -47,7 +52,7 @@ class AuthManager {
 
 	// A derived state to easily check if the user is authenticated
 	get isAuthenticated() {
-		return this.#token !== null;
+		return this.#accountToken !== null;
 	}
 
 	async authenticate(authCode: string) {
@@ -73,8 +78,10 @@ class AuthManager {
 	}
 
 	private handleAuthResponse(response: TheShowAuthResponse) {
+		console.log(response);
 		this.#accountId = response.account_id;
-		this.#token = response.account_token;
+		this.#accountToken = response.account_token;
+		this.#tsToken = response.ts_token;
 		this.#username = response.username;
 		this.#expires = response.expiration;
 
@@ -91,9 +98,10 @@ class AuthManager {
 
 		const data = JSON.parse(storedInfo) as AuthManagerState;
 
+		this.#tsToken = data.tsToken;
 		this.#accountId = data.accountId;
 		this.#expires = data.expires;
-		this.#token = data.accountToken;
+		this.#accountToken = data.accountToken;
 		this.#username = data.username;
 
 		return data;
@@ -104,7 +112,8 @@ class AuthManager {
 			LOCAL_STORAGE_KEY,
 			JSON.stringify({
 				accountId: this.#accountId,
-				accountToken: this.#token,
+				accountToken: this.#accountToken,
+				tsToken: this.#tsToken,
 				username: this.#username,
 				expires: this.#expires
 			} satisfies AuthManagerState)
@@ -112,7 +121,7 @@ class AuthManager {
 	}
 
 	clearAuth() {
-		this.#token = null;
+		this.#accountToken = null;
 		this.#isLoading = false;
 		this.#error = null;
 
