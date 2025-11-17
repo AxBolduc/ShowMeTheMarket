@@ -90,6 +90,15 @@
 
 	let selectedItems = $state(new SvelteSet<string>());
 
+	// Track the count of cards that can be selected (owned but not collected)
+	const selectableCardsCount = $derived.by(() => {
+		if (!collectionQuery.data?.success) return 0;
+
+		return collectionQuery.data.collection.items.filter(
+			(item) => item.quantity !== '0' && item.collection_index === '0'
+		).length;
+	});
+
 	// Track notification state
 	let showSuccessToast = $state(false);
 	let showErrorToast = $state(false);
@@ -173,6 +182,24 @@
 
 		// Trigger the mutation to collect cards
 		collectCardsMutation.mutate(itemIds);
+	}
+
+	// Function to select all owned but not collected cards
+	function selectAllOwnedButNotCollected() {
+		if (!collectionQuery.data?.success) return;
+
+		// Clear current selections first
+		selectedItems.clear();
+
+		// Add all cards that are owned but not collected
+		collectionQuery.data.collection.items.forEach((item) => {
+			const isOwned = item.quantity !== '0';
+			const isCollected = item.collection_index !== '0';
+
+			if (isOwned && !isCollected) {
+				selectedItems.add(item.id);
+			}
+		});
 	}
 </script>
 
@@ -294,7 +321,45 @@
 		<div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
 			<!-- Collection Items -->
 			<div class="lg:col-span-2">
-				<h3 class="text-lg font-bold mb-4">Collection Items</h3>
+				<div class="flex justify-between items-center mb-4">
+					<h3 class="text-lg font-bold">Collection Items</h3>
+					<button
+						class="btn btn-outline btn-sm"
+						aria-label="Select all owned but not collected cards"
+						tabindex="0"
+						onclick={selectAllOwnedButNotCollected}
+						onkeydown={(e) => {
+							if (e.key === 'Enter' || e.key === ' ') {
+								e.preventDefault();
+								selectAllOwnedButNotCollected();
+							}
+						}}
+						disabled={selectableCardsCount === 0}
+					>
+						<div class="tooltip tooltip-left" data-tip="Select all owned but not collected cards">
+							<div class="flex items-center gap-1">
+								<svg
+									xmlns="http://www.w3.org/2000/svg"
+									class="h-4 w-4"
+									fill="none"
+									viewBox="0 0 24 24"
+									stroke="currentColor"
+								>
+									<path
+										stroke-linecap="round"
+										stroke-linejoin="round"
+										stroke-width="2"
+										d="M4 6h16M4 10h16M4 14h16M4 18h16"
+									/>
+								</svg>
+								<span>Select All</span>
+								{#if selectableCardsCount > 0}
+									<span class="badge badge-sm">{selectableCardsCount}</span>
+								{/if}
+							</div>
+						</div>
+					</button>
+				</div>
 
 				{#if inventoryItemsQuery.isLoading && missingItemIds.length > 0}
 					<div class="flex items-center gap-2 bg-info/20 p-3 rounded-lg mb-4">
