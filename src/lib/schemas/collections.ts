@@ -117,3 +117,25 @@ export const GetCollectionResponseSchema = z.discriminatedUnion('success', [
 export type GetCollectionSuccessResponse = z.infer<typeof GetCollectionSuccessResponseSchema>;
 
 export type GetCollectionResponse = z.infer<typeof GetCollectionResponseSchema>;
+
+export const CollectCardsSuccessResponseSchema = z.object({
+	success: z.literal(true),
+	message: z.string(),
+	collection: z.object({
+		id: z.string(),
+		message: z.string(),
+		collection: z.object({
+			is_complete: z.union([z.literal('True'), z.literal('False')]),
+			gained_item_ids: z.string()
+		})
+	})
+});
+
+export const CollectCardsResponseSchema = z.discriminatedUnion('success', [
+	FailureResponseSchema,
+	CollectCardsSuccessResponseSchema
+]);
+
+export type CollectCardsSuccessResponse = z.infer<typeof CollectCardsSuccessResponseSchema>;
+
+export type CollectCardsResponse = z.infer<typeof CollectCardsResponseSchema>;
