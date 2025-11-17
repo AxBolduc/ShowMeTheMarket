@@ -8,7 +8,7 @@
 	const collectionGroupsQuery = createQuery(() => ({
 		queryKey: ['collectionGroups'],
 		queryFn: () => {
-			if (!authStore.accountId || !authStore.token) {
+			if (!authStore.accountId || !authStore.accountToken) {
 				console.error('No auth in auth store');
 				return null;
 			}
@@ -16,7 +16,7 @@
 			return getCollectionGroups({
 				authInfo: {
 					accountId: authStore.accountId.toString(),
-					token: authStore.token
+					token: authStore.accountToken
 				}
 			});
 		}

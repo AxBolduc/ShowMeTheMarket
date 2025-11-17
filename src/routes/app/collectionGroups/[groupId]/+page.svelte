@@ -12,7 +12,7 @@
 	const collectionsQuery = createQuery(() => ({
 		queryKey: ['collections', groupId],
 		queryFn: () => {
-			if (!authStore.accountId || !authStore.token || !groupId) {
+			if (!authStore.accountId || !authStore.accountToken || !groupId) {
 				console.error('No auth in auth store');
 				return null;
 			}
@@ -21,11 +21,11 @@
 				groupId,
 				authInfo: {
 					accountId: authStore.accountId.toString(),
-					token: authStore.token
+					token: authStore.accountToken
 				}
 			});
 		},
-		enabled: !!groupId && !!authStore.accountId && !!authStore.token
+		enabled: !!groupId && !!authStore.accountId && !!authStore.accountToken
 	}));
 </script>
 

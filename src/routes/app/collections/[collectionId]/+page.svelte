@@ -14,7 +14,7 @@
 	const collectionQuery = createQuery(() => ({
 		queryKey: ['collection', collectionId],
 		queryFn: () => {
-			if (!authStore.accountId || !authStore.token || !collectionId) {
+			if (!authStore.accountId || !authStore.accountToken || !collectionId) {
 				console.error('No auth in auth store or missing collection ID');
 				return null;
 			}
@@ -23,11 +23,11 @@
 				collectionId,
 				authInfo: {
 					accountId: authStore.accountId.toString(),
-					token: authStore.token
+					token: authStore.accountToken
 				}
 			});
 		},
-		enabled: !!collectionId && !!authStore.accountId && !!authStore.token
+		enabled: !!collectionId && !!authStore.accountId && !!authStore.accountToken
 	}));
 
 	// Extract missing item IDs that need to be fetched
@@ -49,7 +49,7 @@
 	const inventoryItemsQuery = createQuery(() => ({
 		queryKey: ['inventoryItems', missingItemIds],
 		queryFn: () => {
-			if (!authStore.accountId || !authStore.token || missingItemIds.length === 0) {
+			if (!authStore.accountId || !authStore.accountToken || missingItemIds.length === 0) {
 				return null;
 			}
 
@@ -57,13 +57,13 @@
 				itemIds: missingItemIds,
 				authInfo: {
 					accountId: authStore.accountId.toString(),
-					token: authStore.token
+					token: authStore.accountToken
 				}
 			});
 		},
 		enabled:
 			!!authStore.accountId &&
-			!!authStore.token &&
+			!!authStore.accountToken &&
 			collectionQuery.isSuccess &&
 			missingItemIds.length > 0
 	}));
