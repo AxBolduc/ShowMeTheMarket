@@ -26,7 +26,7 @@ export async function getInventoryItems({
 	});
 
 	if (!result.ok) {
-		const errMsg = `Request to get collection with id ${itemIds.join(',')} failed`;
+		const errMsg = `Request to get inventory items with ids ${itemIds.join(',')} failed`;
 		console.error(errMsg);
 		throw new Error(errMsg);
 	}
