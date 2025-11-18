@@ -64,6 +64,17 @@
 		return parseInt(itemsToBuy[0].price);
 	});
 
+	// Suggested buy and sell prices for placing orders
+	const suggestedBuyPrice = $derived.by(() => {
+		if (highestBuyPrice === null) return null;
+		return highestBuyPrice + 1;
+	});
+
+	const suggestedSellPrice = $derived.by(() => {
+		if (lowestSellPrice === null) return null;
+		return Math.max(1, lowestSellPrice - 1); // Ensure price is at least 1
+	});
+
 	// Function to get the appropriate color class based on rarity
 	function getRarityColorClass(rarity: string): string {
 		switch (rarity.toLowerCase()) {
@@ -149,39 +160,85 @@
 				<!-- Market Status -->
 				<div class="card bg-base-200 shadow-xl">
 					<div class="card-body">
-						<h3 class="card-title mb-2">Market Status</h3>
+						<div class="flex justify-between items-center mb-2">
+							<h3 class="card-title m-0">Market Status</h3>
+							<button
+								class="btn btn-sm btn-ghost btn-square"
+								onclick={() => marketQuery.refetch()}
+								disabled={marketQuery.isRefetching}
+								aria-label="Refresh market data"
+							>
+								<div class="tooltip tooltip-left" data-tip="Refresh market data">
+									{#if marketQuery.isRefetching}
+										<div class="loading loading-spinner loading-xs"></div>
+									{:else}
+										<svg
+											xmlns="http://www.w3.org/2000/svg"
+											class="h-5 w-5"
+											fill="none"
+											viewBox="0 0 24 24"
+											stroke="currentColor"
+										>
+											<path
+												stroke-linecap="round"
+												stroke-linejoin="round"
+												stroke-width="2"
+												d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"
+											/>
+										</svg>
+									{/if}
+								</div>
+							</button>
+						</div>
 						<div class="flex flex-col gap-2">
+							<!-- Buy Actions -->
 							<button class="btn btn-primary btn-block">
 								{#if marketQuery.isLoading}
 									<div class="loading loading-spinner loading-xs mr-2"></div>
-									 Buy Now
+									Buy Now
 								{:else if lowestSellPrice !== null}
 									Buy Now: {numberFormatter.format(lowestSellPrice)}
 								{:else}
 									Buy Now
 								{/if}
 							</button>
-							<button class="btn btn-secondary btn-block">Place Buy Order</button>
+							<button class="btn btn-secondary btn-block">
+								{#if marketQuery.isLoading}
+									<div class="loading loading-spinner loading-xs mr-2"></div>
+									Place Buy Order
+								{:else if suggestedBuyPrice !== null}
+									Place Buy Order: {numberFormatter.format(suggestedBuyPrice)}
+								{:else}
+									Place Buy Order
+								{/if}
+							</button>
+
+							<!-- Sell Actions -->
 							{#if item.is_sellable}
-								<button class="btn btn-accent btn-block">
+								<button class="btn btn-accent btn-block mt-2">
 									{#if marketQuery.isLoading}
 										<div class="loading loading-spinner loading-xs mr-2"></div>
-										 Sell Card
+										Sell Card
 									{:else if highestBuyPrice !== null}
 										Sell Card: {numberFormatter.format(highestBuyPrice)}
 									{:else}
 										Sell Card
 									{/if}
 								</button>
+								<button class="btn btn-outline btn-accent btn-block">
+									{#if marketQuery.isLoading}
+										<div class="loading loading-spinner loading-xs mr-2"></div>
+										Place Sell Order
+									{:else if suggestedSellPrice !== null}
+										Place Sell Order: {numberFormatter.format(suggestedSellPrice)}
+									{:else}
+										Place Sell Order
+									{/if}
+								</button>
 							{:else}
-								<button class="btn btn-disabled btn-block">Not Sellable</button>
+								<button class="btn btn-disabled btn-block mt-2">Not Sellable</button>
 							{/if}
 						</div>
-						{#if marketQuery.data?.success}
-							<div class="mt-2 text-xs opacity-70">
-								Sales Tax: {marketQuery.data.data.info.sales_tax}
-							</div>
-						{/if}
 					</div>
 				</div>
 			</div>
