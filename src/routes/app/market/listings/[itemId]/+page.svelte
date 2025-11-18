@@ -45,7 +45,7 @@
 	<div class="text-sm breadcrumbs mb-4">
 		<ul>
 			<li><a href="/app/market/listings" class="text-primary">Listings</a></li>
-			<li class="font-semibold">{itemId}</li>
+			<li class="font-semibold">{itemQuery.data?.name ?? itemId}</li>
 		</ul>
 	</div>
 
@@ -81,22 +81,39 @@
 
 		<div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
 			<!-- Left Column: Card Image & Basic Info -->
-			<div class="card bg-base-200 shadow-xl">
-				<figure class="px-6 pt-6">
-					<img src={item.baked_img} alt={item.name} class="rounded-xl object-contain max-h-96" />
-				</figure>
-				<div class="card-body">
-					<h2 class="card-title text-2xl">{item.name}</h2>
-					<div class="badge badge-lg {getRarityColorClass(item.rarity)}">{item.rarity}</div>
-					<div class="flex flex-wrap gap-2 mt-2">
-						<div class="badge badge-outline">{item.team}</div>
-						<div class="badge badge-outline">{item.display_position}</div>
-						<div class="badge badge-outline">{item.series}</div>
-						<div class="badge badge-outline">OVR: {item.ovr}</div>
+			<div class="space-y-6">
+				<div class="card bg-base-200 shadow-xl">
+					<figure class="px-6 pt-6">
+						<img src={item.baked_img} alt={item.name} class="rounded-xl object-contain max-h-96" />
+					</figure>
+					<div class="card-body">
+						<h2 class="card-title text-2xl">{item.name}</h2>
+						<div class="badge badge-lg {getRarityColorClass(item.rarity)}">{item.rarity}</div>
+						<div class="flex flex-wrap gap-2 mt-2">
+							<div class="badge badge-outline">{item.team}</div>
+							<div class="badge badge-outline">{item.display_position}</div>
+							<div class="badge badge-outline">{item.series}</div>
+							<div class="badge badge-outline">OVR: {item.ovr}</div>
+						</div>
+						{#if item.short_description}
+							<p class="mt-2 text-sm opacity-75">{item.short_description}</p>
+						{/if}
 					</div>
-					{#if item.short_description}
-						<p class="mt-2 text-sm opacity-75">{item.short_description}</p>
-					{/if}
+				</div>
+				<!-- Market Status -->
+				<div class="card bg-base-200 shadow-xl">
+					<div class="card-body">
+						<h3 class="card-title mb-2">Market Status</h3>
+						<div class="flex flex-col gap-2">
+							<button class="btn btn-primary btn-block">Buy Now</button>
+							<button class="btn btn-secondary btn-block">Place Buy Order</button>
+							{#if item.is_sellable}
+								<button class="btn btn-accent btn-block">Sell Card</button>
+							{:else}
+								<button class="btn btn-disabled btn-block">Not Sellable</button>
+							{/if}
+						</div>
+					</div>
 				</div>
 			</div>
 
@@ -376,22 +393,6 @@
 						</div>
 					</div>
 				{/if}
-
-				<!-- Market Status -->
-				<div class="card bg-base-200 shadow-xl">
-					<div class="card-body">
-						<h3 class="card-title mb-2">Market Status</h3>
-						<div class="flex flex-col gap-2">
-							<button class="btn btn-primary btn-block">Buy Now</button>
-							<button class="btn btn-secondary btn-block">Place Buy Order</button>
-							{#if item.is_sellable}
-								<button class="btn btn-accent btn-block">Sell Card</button>
-							{:else}
-								<button class="btn btn-disabled btn-block">Not Sellable</button>
-							{/if}
-						</div>
-					</div>
-				</div>
 			</div>
 		</div>
 	{/if}
