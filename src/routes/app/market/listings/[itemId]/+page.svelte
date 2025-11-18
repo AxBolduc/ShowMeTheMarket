@@ -1,9 +1,13 @@
 <script lang="ts">
 	import { page } from '$app/state';
 	import { getItem } from '$lib/services/items';
+	import { getListing } from '$lib/services/listings';
+	import { getAuthStore } from '$lib/stores/auth.svelte';
 	import { createQuery } from '@tanstack/svelte-query';
 
 	const itemId = $state(page.params.itemId);
+	const authStore = getAuthStore();
+	const numberFormatter = new Intl.NumberFormat();
 
 	// Query to fetch item details
 	const itemQuery = createQuery(() => ({
@@ -17,6 +21,48 @@
 		},
 		enabled: !!itemId
 	}));
+
+	// Query to fetch market listing data
+	const marketQuery = createQuery(() => ({
+		queryKey: ['marketListing', itemId],
+		queryFn: async () => {
+			if (!authStore.accountId || !authStore.accountToken) {
+				throw new Error('Authentication required');
+			}
+
+			const response = await getListing({
+				itemUuid: itemId!,
+				authInfo: {
+					accountId: authStore.accountId.toString(),
+					token: authStore.accountToken
+				}
+			});
+
+			return response;
+		},
+		enabled: !!itemId && !!authStore.accountId && !!authStore.accountToken && itemQuery.isSuccess
+	}));
+
+	// Derived values for lowest sell price and highest buy price
+	const lowestSellPrice = $derived.by(() => {
+		if (!marketQuery.data?.success) return null;
+
+		const itemsToSell = marketQuery.data.data.items_to_sell;
+		if (itemsToSell.length === 0) return null;
+
+		// Find the lowest price
+		return parseInt(itemsToSell[0].price);
+	});
+
+	const highestBuyPrice = $derived.by(() => {
+		if (!marketQuery.data?.success) return null;
+
+		const itemsToBuy = marketQuery.data.data.items_to_buy;
+		if (itemsToBuy.length === 0) return null;
+
+		// Find the highest price
+		return parseInt(itemsToBuy[0].price);
+	});
 
 	// Function to get the appropriate color class based on rarity
 	function getRarityColorClass(rarity: string): string {
@@ -105,14 +151,37 @@
 					<div class="card-body">
 						<h3 class="card-title mb-2">Market Status</h3>
 						<div class="flex flex-col gap-2">
-							<button class="btn btn-primary btn-block">Buy Now</button>
+							<button class="btn btn-primary btn-block">
+								{#if marketQuery.isLoading}
+									<div class="loading loading-spinner loading-xs mr-2"></div>
+									 Buy Now
+								{:else if lowestSellPrice !== null}
+									Buy Now: {numberFormatter.format(lowestSellPrice)}
+								{:else}
+									Buy Now
+								{/if}
+							</button>
 							<button class="btn btn-secondary btn-block">Place Buy Order</button>
 							{#if item.is_sellable}
-								<button class="btn btn-accent btn-block">Sell Card</button>
+								<button class="btn btn-accent btn-block">
+									{#if marketQuery.isLoading}
+										<div class="loading loading-spinner loading-xs mr-2"></div>
+										 Sell Card
+									{:else if highestBuyPrice !== null}
+										Sell Card: {numberFormatter.format(highestBuyPrice)}
+									{:else}
+										Sell Card
+									{/if}
+								</button>
 							{:else}
 								<button class="btn btn-disabled btn-block">Not Sellable</button>
 							{/if}
 						</div>
+						{#if marketQuery.data?.success}
+							<div class="mt-2 text-xs opacity-70">
+								Sales Tax: {marketQuery.data.data.info.sales_tax}
+							</div>
+						{/if}
 					</div>
 				</div>
 			</div>
