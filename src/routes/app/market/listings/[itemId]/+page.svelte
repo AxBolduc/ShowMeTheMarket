@@ -314,31 +314,31 @@
 						<h3 class="card-title mb-2">Physical Details</h3>
 						<div class="grid grid-cols-2 gap-4 text-sm">
 							<div>
-								<span class="text-primary">Age:</span>
+								<span class="text-secondary">Age:</span>
 								{item.age}
 							</div>
 							<div>
-								<span class="text-primary">Height:</span>
+								<span class="text-secondary">Height:</span>
 								{item.height}
 							</div>
 							<div>
-								<span class="text-primary">Weight:</span>
+								<span class="text-secondary">Weight:</span>
 								{item.weight}
 							</div>
 							<div>
-								<span class="text-primary">Born:</span>
+								<span class="text-secondary">Born:</span>
 								{item.born}
 							</div>
 							<div>
-								<span class="text-primary">Bats:</span>
+								<span class="text-secondary">Bats:</span>
 								{item.bat_hand}
 							</div>
 							<div>
-								<span class="text-primary">Throws:</span>
+								<span class="text-secondary">Throws:</span>
 								{item.throw_hand}
 							</div>
 							<div>
-								<span class="text-primary">Jersey #:</span>
+								<span class="text-secondary">Jersey #:</span>
 								{item.jersey_number}
 							</div>
 						</div>
