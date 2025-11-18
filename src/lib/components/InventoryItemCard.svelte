@@ -1,8 +1,8 @@
 <script lang="ts">
-	import type { InventoryItemSchema } from '$lib/schemas/inventory';
+	import type { MlbCardSchema } from '$lib/schemas/mlbCard';
 	import type { z } from 'zod';
 
-	type InventoryItem = z.infer<typeof InventoryItemSchema>;
+	type MlbCard = z.infer<typeof MlbCardSchema>;
 
 	// Props definition
 	let {
@@ -15,7 +15,7 @@
 		showDetails = true, // Whether to show full details
 		onClick = undefined // Click handler (optional)
 	} = $props<{
-		item?: InventoryItem;
+		item?: MlbCard;
 		itemId: string;
 		isOwned: boolean;
 		isLoading?: boolean;
