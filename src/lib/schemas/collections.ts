@@ -1,6 +1,6 @@
 import z from 'zod';
 import { FailureResponseSchema } from './utils';
-import { InventoryItemSchema } from './inventory';
+import { MlbCardSchema } from './mlbCard';
 
 export const CollectionSchema = z.object({
 	id: z.string(),
@@ -105,7 +105,7 @@ export const GetCollectionSuccessResponseSchema = z.object({
 	success: z.literal(true),
 	message: z.string(),
 	collection: CollectionDetailSchema,
-	inventory_items: z.array(InventoryItemSchema)
+	inventory_items: z.array(MlbCardSchema)
 });
 
 // Schema for get collection response
