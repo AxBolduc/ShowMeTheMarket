@@ -21,9 +21,6 @@ export async function getItem({ itemUuid }: { itemUuid: string }) {
 	try {
 		const data = await result.json();
 
-const data = await result.json();
-const parsedData = PublicApiMlbCardSchema.parse(data);
-
 		const parsedData = PublicApiMlbCardSchema.parse(data);
 
 		return parsedData;
