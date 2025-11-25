@@ -20,7 +20,25 @@ export type GetListingsOptions = z.infer<typeof GetListingsOptionsSchema>;
 
 // --- 1. Item Schema ---
 // Represents the 'item' object within each listing
-export const ItemSchema = z.object({
+//
+export const EquipmentItemSchema = z.object({
+	type: z.literal('equipment'),
+	uuid: z.string(),
+	img: z.url('Invalid image URL format'),
+	baked_img: z.url('Invalid baked image URL format'),
+	name: z.string().min(1, 'Item name cannot be empty'),
+	short_description: z.nullable(z.string()),
+	rarity: z.string(),
+	brand: z.string(),
+	brand_logo_name: z.string(),
+	slot: z.string(),
+	attribute_names: z.array(z.string()),
+	attribute_values: z.array(z.string()),
+	description: z.string(),
+	is_sellable: z.boolean().optional()
+});
+
+export const MlbCardItemSchema = z.object({
 	uuid: z.string(),
 	type: z.literal('mlb_card'), // As established, it's 'mlb_card'
 	img: z.url('Invalid image URL format'), // Expecting a valid URL
@@ -49,6 +67,38 @@ export const ItemSchema = z.object({
 	is_live_set: z.boolean(),
 	ui_anim_index: z.number().int().min(0, 'UI animation index cannot be negative')
 });
+
+export const UnlockableItemSchema = z.object({
+	uuid: z.string(),
+	type: z.literal('unlockable'),
+	img: z.url('Invalid image URL format'),
+	baked_img: z.url('Invalid baked image URL format'),
+	name: z.string().min(1, 'Item name cannot be empty'),
+	short_description: z.nullable(z.string()),
+	rarity: z.string(),
+	is_sellable: z.boolean().optional()
+});
+
+export const SponsorshipItemSchema = z.object({
+	baked_img: z.url('Invalid baked image URL format'),
+	bonus: z.string(),
+	brand: z.string(),
+	brand_logo_name: z.string(),
+	img: z.url('Invalid image URL format'),
+	is_sellable: z.boolean().optional(),
+	name: z.string().min(1, 'Item name cannot be empty'),
+	rarity: z.string(),
+	short_description: z.nullable(z.string()),
+	uuid: z.string(),
+	type: z.literal('sponsorship')
+});
+
+export const ItemSchema = z.discriminatedUnion('type', [
+	EquipmentItemSchema,
+	MlbCardItemSchema,
+	UnlockableItemSchema,
+	SponsorshipItemSchema
+]);
 
 export type Item = z.infer<typeof ItemSchema>;
 

@@ -43,7 +43,9 @@
 	</div>
 	<div>
 		<div>{listing.listing_name}</div>
-		<div class="text-xs uppercase font-semibold opacity-60">{listing.item.series}</div>
+		{#if listing.item.type === 'mlb_card'}
+			<div class="text-xs uppercase font-semibold opacity-60">{listing.item.series}</div>
+		{/if}
 	</div>
 	<div class="">
 		<button class="btn btn-primary" onclick={handleBuyClick}>
