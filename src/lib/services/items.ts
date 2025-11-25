@@ -13,7 +13,7 @@ export async function getItem({ itemUuid }: { itemUuid: string }) {
 	});
 
 	if (!result.ok) {
-		const errMsg = `Request to get items with uuid ${itemUuid} failed`;
+		const errMsg = `Request to get item with uuid ${itemUuid} failed`;
 		console.error(errMsg);
 		throw new Error(errMsg);
 	}
@@ -21,13 +21,14 @@ export async function getItem({ itemUuid }: { itemUuid: string }) {
 	try {
 		const data = await result.json();
 
-		console.log(data);
+const data = await result.json();
+const parsedData = PublicApiMlbCardSchema.parse(data);
 
 		const parsedData = PublicApiMlbCardSchema.parse(data);
 
 		return parsedData;
 	} catch (err) {
-		const errMsg = 'Validation failed for getInventoryItems request';
+		const errMsg = 'Validation failed for getItem request';
 
 		if (err instanceof ZodError) {
 			console.error(z.prettifyError(err));
