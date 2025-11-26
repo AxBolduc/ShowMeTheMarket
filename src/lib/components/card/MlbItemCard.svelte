@@ -2,7 +2,6 @@
 	// Props definition
 	let {
 		item, // Full inventory item data (optional)
-		itemId, // Item ID (required)
 		isOwned = false, // Whether the user owns this item
 		isLoading = false, // Whether this item is loading
 		isCollected = false, // Whether this item is collected in a collection
@@ -18,7 +17,6 @@
 			baked_img: string;
 			team: string;
 		};
-		itemId: string;
 		isOwned: boolean;
 		isLoading?: boolean;
 		isCollected?: boolean;
@@ -28,7 +26,7 @@
 	} = $props();
 
 	// Compute display values with proper fallbacks
-	const name = $derived(item?.name || `Item #${itemId}`);
+	const name = $derived(item?.name);
 	const imageUrl = $derived(item?.baked_img || item?.img || '');
 	const hasImage = $derived(!!imageUrl);
 

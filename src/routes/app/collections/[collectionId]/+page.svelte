@@ -230,7 +230,7 @@
 
 		return rewardItemsQuery.data.inventory_items
 			.filter((item) => item.type === 'mlb_card')
-			.find((item) => item.id.toString() === id);
+			.find((item) => item.id?.toString() === id);
 	}
 
 	// Function to handle back navigation
@@ -441,7 +441,6 @@
 
 						<MlbItemCard
 							item={inventoryItem}
-							itemId={item.id}
 							{isOwned}
 							{isCollected}
 							{isLoading}
@@ -496,7 +495,6 @@
 									<div class="mt-1">
 										<MlbItemCard
 											item={rewardItem}
-											itemId={reward.item_id}
 											isOwned={reward.has_collected === '1'}
 											isCollected={reward.has_collected === '1'}
 											showDetails={true}

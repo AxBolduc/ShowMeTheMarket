@@ -237,12 +237,7 @@
 							<!-- Revealed card -->
 							<div in:fly={{ y: 20, duration: 500, delay: 100 }}>
 								{#if card.type === 'mlb_card'}
-									<MlbItemCard
-										item={card}
-										itemId={card.id.toString()}
-										isOwned={true}
-										showDetails={true}
-									/>
+									<MlbItemCard item={card} isOwned={true} showDetails={true} />
 								{:else}
 									<EquipmentItemCard item={card} isOwned={true} />
 								{/if}

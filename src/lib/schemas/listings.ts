@@ -39,7 +39,7 @@ export const EquipmentItemSchema = z.object({
 });
 
 export const MlbCardItemSchema = z.object({
-	id: z.number(),
+	id: z.number().optional(),
 	uuid: z.string(),
 	type: z.literal('mlb_card'), // As established, it's 'mlb_card'
 	img: z.url('Invalid image URL format'), // Expecting a valid URL
