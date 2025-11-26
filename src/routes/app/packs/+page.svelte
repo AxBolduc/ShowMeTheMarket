@@ -3,17 +3,13 @@
 	import { getAuthStore } from '$lib/stores/auth.svelte';
 	import { createQuery } from '@tanstack/svelte-query';
 	import PackCard from '$lib/components/PackCard.svelte';
-	import PackOpeningModal from '$lib/components/PackOpeningModal.svelte';
 	import type { MyPackSchema } from '$lib/schemas/packs';
 	import type { z } from 'zod';
+	import { goto } from '$app/navigation';
 
 	type Pack = z.infer<typeof MyPackSchema>;
 
 	const authStore = getAuthStore();
-
-	// State for the pack opening modal
-	let isModalOpen = $state(false);
-	let selectedPack = $state<Pack | null>(null);
 
 	// Query to fetch user's packs
 	const packsQuery = createQuery(() => ({
@@ -36,14 +32,8 @@
 
 	// Function to handle pack click
 	function handlePackClick(pack: Pack) {
-		selectedPack = pack;
-		isModalOpen = true;
-	}
-
-	// Function to close the modal
-	function handleCloseModal() {
-		isModalOpen = false;
-		selectedPack = null;
+		// Navigate to the pack opening page
+		goto(`/app/packs/${pack.id}`);
 	}
 </script>
 
@@ -122,15 +112,5 @@
 				<PackCard {pack} onClick={() => handlePackClick(pack)} />
 			{/each}
 		</div>
-
-		{#if selectedPack}
-			<PackOpeningModal
-				isOpen={isModalOpen}
-				packId={selectedPack.id}
-				packName={selectedPack.name}
-				packImage={selectedPack.img}
-				onClose={handleCloseModal}
-			/>
-		{/if}
 	{/if}
 </div>

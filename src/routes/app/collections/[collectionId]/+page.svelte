@@ -4,8 +4,8 @@
 	import { getAuthStore } from '$lib/stores/auth.svelte';
 	import { createQuery, createMutation, useQueryClient } from '@tanstack/svelte-query';
 	import { page } from '$app/state';
-	import InventoryItemCard from '$lib/components/InventoryItemCard.svelte';
 	import { SvelteSet } from 'svelte/reactivity';
+	import MlbItemCard from '$lib/components/card/MlbItemCard.svelte';
 
 	const authStore = getAuthStore();
 	const collectionId = $state(page.params.collectionId);
@@ -108,14 +108,35 @@
 
 		// Start with items from the collection response
 		const items = new Map(
-			collectionQuery.data.inventory_items.map((item) => [item.id.toString(), item])
+			collectionQuery.data.inventory_items.map((item) => [
+				item.id.toString(),
+				{
+					rarity: item.rarity,
+					ovr: item.ovr,
+					name: item.name,
+					img: item.img,
+					baked_img: item.baked_img,
+					team: item.team
+				}
+			])
 		);
 
 		// Add items from the inventory items query if available
 		if (inventoryItemsQuery.data?.success) {
-			inventoryItemsQuery.data.inventory_items.forEach((item) => {
-				items.set(item.id.toString(), item);
-			});
+			inventoryItemsQuery.data.inventory_items
+				.filter((item) => item.type === 'mlb_card')
+				.forEach((item) => {
+					if (item.id !== undefined) {
+						items.set(item.id.toString(), {
+							rarity: item.rarity,
+							ovr: item.ovr,
+							name: item.name,
+							img: item.img,
+							baked_img: item.baked_img,
+							team: item.team
+						});
+					}
+				});
 		}
 
 		return Object.fromEntries(items);
@@ -207,7 +228,9 @@
 	function getRewardItemById(id: string) {
 		if (!rewardItemsQuery.data?.success) return undefined;
 
-		return rewardItemsQuery.data.inventory_items.find((item) => item.id.toString() === id);
+		return rewardItemsQuery.data.inventory_items
+			.filter((item) => item.type === 'mlb_card')
+			.find((item) => item.id.toString() === id);
 	}
 
 	// Function to handle back navigation
@@ -416,7 +439,7 @@
 						{@const isLoading = inventoryItemsQuery.isLoading && missingItemIds.includes(item.id)}
 						{@const isSelected = selectedItems.has(item.id)}
 
-						<InventoryItemCard
+						<MlbItemCard
 							item={inventoryItem}
 							itemId={item.id}
 							{isOwned}
@@ -469,9 +492,9 @@
 
 							{#if reward.item_id !== '0'}
 								{@const rewardItem = getRewardItemById(reward.item_id)}
-								{#if rewardItem}
+								{#if rewardItem?.type === 'mlb_card'}
 									<div class="mt-1">
-										<InventoryItemCard
+										<MlbItemCard
 											item={rewardItem}
 											itemId={reward.item_id}
 											isOwned={reward.has_collected === '1'}

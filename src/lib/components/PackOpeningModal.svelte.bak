@@ -112,9 +112,11 @@
 	function revealAllCards() {
 		revealedCards = Array(cardItems.length).fill(true);
 		currentCardIndex = cardItems.length;
+		// We're handling the complete stage in the same layout now,
+		// so we can transition immediately for smoother experience
 		setTimeout(() => {
 			currentStage = 'complete';
-		}, 1000);
+		}, 1200);
 	}
 
 	// Function to close the modal
@@ -155,24 +157,36 @@
 			<div class="flex justify-center items-center py-16">
 				<div class="loading loading-spinner loading-lg"></div>
 			</div>
-		{:else if currentStage === 'reveal'}
-			<!-- Card Reveal Stage -->
+		{:else if currentStage === 'reveal' || currentStage === 'complete'}
+			<!-- Unified Card Reveal and Complete Stages -->
 			<div class="p-6">
 				<div class="flex justify-between items-center mb-8">
-					<h2 class="text-2xl font-bold">Your New Cards!</h2>
-					<button class="btn btn-outline" onclick={revealAllCards}> Reveal All </button>
+					<h2 class="text-2xl font-bold">
+						{currentStage === 'reveal' ? 'Your New Cards!' : 'Pack Opening Complete!'}
+					</h2>
+					<div class="min-w-28 text-right">
+						{#if currentStage === 'reveal' && currentCardIndex < cardItems.length}
+							<button class="btn btn-outline w-28" onclick={revealAllCards}> Reveal All </button>
+						{:else}
+							<button class="btn btn-primary w-28" onclick={handleClose}> Done </button>
+						{/if}
+					</div>
 				</div>
 
-				<div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6 mb-8">
+				<!-- Same grid layout for both stages to avoid layout shift -->
+				<div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6 mb-8 min-h-[400px]">
 					{#each cardItems as card, i}
 						<div
-							class="transform transition-all duration-500 {revealedCards[i]
+							class="transform transition-all duration-500 {revealedCards[i] ||
+							currentStage === 'complete'
 								? 'scale-100'
-								: 'scale-90'} {i === currentCardIndex && !revealedCards[i]
+								: 'scale-90'} {i === currentCardIndex &&
+							!revealedCards[i] &&
+							currentStage === 'reveal'
 								? 'pulse-animation'
 								: ''}"
 						>
-							{#if revealedCards[i]}
+							{#if revealedCards[i] || currentStage === 'complete'}
 								<!-- Revealed card -->
 								<div in:fly={{ y: 20, duration: 500, delay: 100 }}>
 									<InventoryItemCard
@@ -181,7 +195,7 @@
 										isOwned={true}
 										showDetails={true}
 									/>
-									{#if isHighValueCard(card)}
+									{#if isHighValueCard(card) && currentStage === 'reveal'}
 										<div
 											in:scale={{ duration: 300, delay: 200 }}
 											class="badge badge-accent mt-2 w-full"
@@ -191,7 +205,7 @@
 									{/if}
 								</div>
 							{:else}
-								<!-- Card back -->
+								<!-- Card back (only shown in reveal stage for unrevealed cards) -->
 								<div
 									class="card bg-primary h-64 cursor-pointer flex items-center justify-center"
 									onclick={revealNextCard}
@@ -220,31 +234,14 @@
 					{/each}
 				</div>
 
-				{#if currentCardIndex < cardItems.length}
-					<div class="text-center">
+				{#if currentStage === 'reveal' && currentCardIndex < cardItems.length}
+					<div class="text-center h-10">
 						<p>Click on the next card to reveal or use "Reveal All" to see all at once</p>
 					</div>
+				{:else}
+					<!-- Empty space to maintain consistent height -->
+					<div class="h-10"></div>
 				{/if}
-			</div>
-		{:else if currentStage === 'complete'}
-			<!-- Complete Stage: Summary of cards -->
-			<div class="p-6" in:fade={{ duration: 300 }}>
-				<h2 class="text-2xl font-bold mb-6">Pack Opening Complete!</h2>
-
-				<div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4 mb-8">
-					{#each cardItems as card}
-						<InventoryItemCard
-							item={card}
-							itemId={card.id.toString()}
-							isOwned={true}
-							showDetails={true}
-						/>
-					{/each}
-				</div>
-
-				<div class="flex justify-end mt-6">
-					<button class="btn btn-primary" onclick={handleClose}> Done </button>
-				</div>
 			</div>
 		{/if}
 	</div>

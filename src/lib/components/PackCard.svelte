@@ -8,10 +8,10 @@
 	let {
 		pack, // Pack data
 		onClick = undefined // Click handler (optional)
-	} = $props<{
+	}: {
 		pack: Pack;
 		onClick?: () => void;
-	}>();
+	} = $props();
 
 	// Handle keyboard navigation
 	function handleKeyDown(e: KeyboardEvent) {

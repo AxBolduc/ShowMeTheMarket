@@ -39,6 +39,7 @@ export const EquipmentItemSchema = z.object({
 });
 
 export const MlbCardItemSchema = z.object({
+	id: z.number(),
 	uuid: z.string(),
 	type: z.literal('mlb_card'), // As established, it's 'mlb_card'
 	img: z.url('Invalid image URL format'), // Expecting a valid URL
@@ -99,6 +100,8 @@ export const ItemSchema = z.discriminatedUnion('type', [
 	UnlockableItemSchema,
 	SponsorshipItemSchema
 ]);
+
+export type MlbCardItem = z.infer<typeof MlbCardItemSchema>;
 
 export type Item = z.infer<typeof ItemSchema>;
 
