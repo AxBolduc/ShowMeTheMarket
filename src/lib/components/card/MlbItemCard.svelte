@@ -1,32 +1,32 @@
 <script lang="ts">
-	import type { MlbCardSchema } from '$lib/schemas/mlbCard';
-	import type { z } from 'zod';
-
-	type MlbCard = z.infer<typeof MlbCardSchema>;
-
 	// Props definition
 	let {
 		item, // Full inventory item data (optional)
-		itemId, // Item ID (required)
 		isOwned = false, // Whether the user owns this item
 		isLoading = false, // Whether this item is loading
 		isCollected = false, // Whether this item is collected in a collection
 		isSelected = false, // Whether this item is selected for collection
 		showDetails = true, // Whether to show full details
 		onClick = undefined // Click handler (optional)
-	} = $props<{
-		item?: MlbCard;
-		itemId: string;
+	}: {
+		item?: {
+			rarity: string;
+			ovr: number;
+			name: string;
+			img: string;
+			baked_img: string;
+			team: string;
+		};
 		isOwned: boolean;
 		isLoading?: boolean;
 		isCollected?: boolean;
 		isSelected?: boolean;
 		showDetails?: boolean;
 		onClick?: () => void;
-	}>();
+	} = $props();
 
 	// Compute display values with proper fallbacks
-	const name = $derived(item?.name || `Item #${itemId}`);
+	const name = $derived(item?.name ?? 'Item');
 	const imageUrl = $derived(item?.baked_img || item?.img || '');
 	const hasImage = $derived(!!imageUrl);
 
@@ -85,10 +85,6 @@
 						<span class="badge badge-error badge-sm">Not Owned</span>
 					{/if}
 				</div>
-			{:else if isOwned}
-				<span class="badge badge-success badge-sm">Owned</span>
-			{:else}
-				<span class="badge badge-error badge-sm">Not Owned</span>
 			{/if}
 		{/if}
 	</div>

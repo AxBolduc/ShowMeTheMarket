@@ -1,11 +1,11 @@
 import z from 'zod';
 import { FailureResponseSchema } from './utils';
-import { MlbCardSchema } from './mlbCard';
+import { ItemSchema } from './listings';
 
 export const GetInventoryItemsSuccessResponseSchema = z.object({
 	success: z.literal(true),
 	message: z.string(),
-	inventory_items: z.array(MlbCardSchema)
+	inventory_items: z.array(ItemSchema)
 });
 
 export const getInventoryItemsResponseSchema = z.discriminatedUnion('success', [
