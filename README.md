@@ -13,14 +13,21 @@ Desktop application for interacting with the marketplace for MLB The Show 25 Dia
   - [x] Collect cards
 - [ ] Marketplace
   - [x] View coin balance
-  - [ ] View card
-    - [ ] View stats
-    - [ ] View perks
-  - [ ] Search the market for cards
+  - [x] View card
+    - [x] View stats
+    - [x] View perks
+  - [x] Search the market for cards
   - [ ] Place Buy/Sell orders for cards
   - [ ] View outstanding card orders
   - [ ] View completed orders
-  - [ ] View card inventory
+  - [x] View card inventory
+- [ ] Packs
+  - [x] View Packs
+    - [ ] View Pack details
+    - [x] Open Pack
+      - [x] Reveal cards
+      - [x] Reveal all cards
+      - [x] Go back to Packs
 
 ## Notes
 
@@ -57,4 +64,3 @@ bun run tauri build
 ## License
 
 This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
-
