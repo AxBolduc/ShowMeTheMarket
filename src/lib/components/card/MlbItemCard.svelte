@@ -26,7 +26,7 @@
 	} = $props();
 
 	// Compute display values with proper fallbacks
-	const name = $derived(item?.name);
+	const name = $derived(item?.name ?? 'Item');
 	const imageUrl = $derived(item?.baked_img || item?.img || '');
 	const hasImage = $derived(!!imageUrl);
 

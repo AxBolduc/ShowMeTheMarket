@@ -1,6 +1,6 @@
 <script lang="ts">
-	import type { MyPackSchema } from '$lib/schemas/packs';
-	import type { z } from 'zod';
+	import { MyPackSchema } from '$lib/schemas/packs';
+	import { z } from 'zod';
 
 	type Pack = z.infer<typeof MyPackSchema>;
 

@@ -10,7 +10,7 @@ export async function getMyPacks({ authInfo }: { authInfo: AuthInfo }) {
 	const response = await fetch(url, {
 		method: 'POST',
 		body: JSON.stringify({
-			account_id: authInfo.accountId?.toString(),
+			account_id: authInfo.accountId.toString(),
 			account_token: authInfo.token
 		}),
 		headers: { 'content-type': 'application/json' }
@@ -29,13 +29,13 @@ export async function getMyPacks({ authInfo }: { authInfo: AuthInfo }) {
 		return parsedData;
 	} catch (err) {
 		if (err instanceof ZodError) {
-			const errMsg = 'Validation failed for getListing';
+			const errMsg = 'Validation failed for getMyPacks';
 			console.error(errMsg, z.prettifyError(err));
 			throw err;
 		}
 
 		console.error(err);
-		throw new Error('Unknown error in getListing');
+		throw new Error('Unknown error in getMyPacks');
 	}
 }
 
@@ -60,8 +60,6 @@ export async function openPack({ packId, authInfo }: { packId: string; authInfo:
 
 	try {
 		const data = await response.json();
-
-		console.log(data);
 
 		const parsedData = OpenPackResponseSchema.parse(data);
 

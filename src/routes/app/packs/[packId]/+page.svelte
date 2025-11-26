@@ -6,15 +6,11 @@
 	import { createQuery, createMutation, useQueryClient } from '@tanstack/svelte-query';
 	import { fly, fade, scale } from 'svelte/transition';
 	import { getInventoryItems } from '$lib/services/inventory';
-	import { MlbCardSchema } from '$lib/schemas/mlbCard';
-	import type { z } from 'zod';
 	import EquipmentItemCard from '$lib/components/card/EquipmentItemCard.svelte';
 	import MlbItemCard from '$lib/components/card/MlbItemCard.svelte';
-	import type { Item, MlbCardItem } from '$lib/schemas/listings';
+	import type { Item } from '$lib/schemas/listings';
 
-	type MlbCard = z.infer<typeof MlbCardSchema>;
-
-	const packId = $state(page.params.packId || '');
+	const packId = $derived(page.params.packId || '');
 	const authStore = getAuthStore();
 	const queryClient = useQueryClient();
 
@@ -43,11 +39,8 @@
 		queryKey: ['pack', packId],
 		queryFn: async () => {
 			if (!authStore.accountId || !authStore.accountToken) {
-				console.error('No auth in auth store');
-				return null;
+				throw new Error('No auth in auth store');
 			}
-
-			console.log('packId', packId);
 
 			const packsResult = await getMyPacks({
 				authInfo: {
@@ -67,10 +60,7 @@
 			}
 			return null;
 		},
-		enabled: !!packId && !!authStore.accountId && !!authStore.accountToken,
-		onError: () => {
-			goto('/app/packs');
-		}
+		enabled: !!packId && !!authStore.accountId && !!authStore.accountToken
 	}));
 
 	// Pack opening mutation
