@@ -46,6 +46,16 @@
 			.map((item) => item.id);
 	});
 
+	// Extract reward item IDs that need to be fetched
+	const rewardItemIds = $derived.by(() => {
+		if (!collectionQuery.data?.success) return [];
+
+		// Filter out rewards without item IDs or with '0' as the ID
+		return collectionQuery.data.collection.rewards
+			.filter((reward) => reward.item_id && reward.item_id !== '0')
+			.map((reward) => reward.item_id);
+	});
+
 	// Query to fetch missing inventory items
 	const inventoryItemsQuery = createQuery(() => ({
 		queryKey: ['inventoryItems', missingItemIds],
@@ -67,6 +77,29 @@
 			!!authStore.accountToken &&
 			collectionQuery.isSuccess &&
 			missingItemIds.length > 0
+	}));
+
+	// Query to fetch reward item details
+	const rewardItemsQuery = createQuery(() => ({
+		queryKey: ['rewardItems', rewardItemIds],
+		queryFn: () => {
+			if (!authStore.accountId || !authStore.accountToken || rewardItemIds.length === 0) {
+				return null;
+			}
+
+			return getInventoryItems({
+				itemIds: rewardItemIds,
+				authInfo: {
+					accountId: authStore.accountId.toString(),
+					token: authStore.accountToken
+				}
+			});
+		},
+		enabled:
+			!!authStore.accountId &&
+			!!authStore.accountToken &&
+			collectionQuery.isSuccess &&
+			rewardItemIds.length > 0
 	}));
 
 	// Combine inventory items from both API calls
@@ -168,6 +201,13 @@
 
 		const item = inventoryItems[id];
 		return item;
+	}
+
+	// Function to get reward item details by ID
+	function getRewardItemById(id: string) {
+		if (!rewardItemsQuery.data?.success) return undefined;
+
+		return rewardItemsQuery.data.inventory_items.find((item) => item.id.toString() === id);
 	}
 
 	// Function to handle back navigation
@@ -402,28 +442,51 @@
 
 				<div class="bg-base-300 rounded-lg p-4">
 					{#each collectionQuery.data.collection.rewards as reward}
-						<div class="flex items-center p-3 border-b border-base-200 last:border-b-0">
-							<div class="flex-1">
-								{#if reward.item_id !== '0'}
-									<div class="font-medium">Item Reward</div>
-									<div class="text-sm opacity-70">Item ID: {reward.item_id}</div>
-								{:else if reward.stubs !== '0'}
-									<div class="font-medium">Stubs Reward</div>
-									<div class="text-sm opacity-70">{reward.stubs} stubs</div>
-								{:else if reward.xp !== '0'}
-									<div class="font-medium">XP Reward</div>
-									<div class="text-sm opacity-70">{reward.xp} XP</div>
-								{/if}
+						<div class="flex flex-col p-3 border-b border-base-200 last:border-b-0">
+							<div class="flex items-center justify-between mb-2">
+								<div>
+									{#if reward.item_id !== '0'}
+										<div class="font-medium">Item Reward</div>
+									{:else if reward.stubs !== '0'}
+										<div class="font-medium">Stubs Reward</div>
+										<div class="text-sm opacity-70">{reward.stubs} stubs</div>
+									{:else if reward.xp !== '0'}
+										<div class="font-medium">XP Reward</div>
+										<div class="text-sm opacity-70">{reward.xp} XP</div>
+									{/if}
+								</div>
 
-								{#if reward.qty_required !== '0'}
-									<div class="text-xs mt-1">Requires {reward.qty_required} items</div>
+								{#if reward.has_collected === '1'}
+									<div class="badge badge-success">Collected</div>
+								{:else}
+									<div class="badge badge-outline">Uncollected</div>
 								{/if}
 							</div>
 
-							{#if reward.has_collected === '1'}
-								<div class="badge badge-success">Collected</div>
-							{:else}
-								<div class="badge badge-outline">Uncollected</div>
+							{#if reward.qty_required !== '0'}
+								<div class="text-xs mb-2">Requires {reward.qty_required} items</div>
+							{/if}
+
+							{#if reward.item_id !== '0'}
+								{@const rewardItem = getRewardItemById(reward.item_id)}
+								{#if rewardItem}
+									<div class="mt-1">
+										<InventoryItemCard
+											item={rewardItem}
+											itemId={reward.item_id}
+											isOwned={reward.has_collected === '1'}
+											isCollected={reward.has_collected === '1'}
+											showDetails={true}
+										/>
+									</div>
+								{:else if rewardItemsQuery.isLoading}
+									<div class="flex items-center gap-2 mt-2 p-3 bg-base-200 rounded-md">
+										<div class="loading loading-spinner loading-xs"></div>
+										<span class="text-sm opacity-70">Loading reward details...</span>
+									</div>
+								{:else}
+									<div class="text-sm opacity-70 mt-1">Item ID: {reward.item_id}</div>
+								{/if}
 							{/if}
 						</div>
 					{/each}
